@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_dial"
+        android:fontFamily="@font/font"
+        android:icon="@android:drawable/ic_menu_call"
+        android:title="@string/title_dial"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextColor="@color/colorAccent" />
+    <item
+        android:id="@+id/navigation_phonebook"
+        android:fontFamily="@font/font"
+        android:icon="@drawable/ic_phonebook"
+        android:title="@string/title_phonebook"
+        app:itemIconTint="@color/colorPrimaryDark"
+        app:itemTextColor="@color/colorPrimaryDark" />
+
+    <item
+        android:id="@+id/navigation_pictures"
+        android:fontFamily="@font/font"
+        android:icon="@drawable/ic_picture"
+        android:title="@string/title_dashboard"
+        app:itemIconTint="@color/colorPrimaryDark"
+        app:itemTextColor="@color/colorPrimaryDark" />
+
+    <item
+        android:id="@+id/navigation_randomgame"
+        android:fontFamily="@font/font"
+        android:icon="@drawable/ic_videogame_asset_black_24dp"
+        android:title="@string/title_randomgame"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextColor="@color/colorPrimaryDark" />
+
+
+</menu>
+
