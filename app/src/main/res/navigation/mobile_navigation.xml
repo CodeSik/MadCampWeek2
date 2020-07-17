@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_phonebook"
-        android:name="com.example.project1.ui.phonebook.PhoneBookFragment"
+        android:name="com.example.project2.ui.phonebook.PhoneBookFragment"
         android:label="@string/title_phonebook"
         tools:layout="@layout/fragment_phonebook" />
 
     <fragment
         android:id="@+id/navigation_pictures"
-        android:name="com.example.project1.ui.pictures.PicturesFragment"
+        android:name="com.example.project2.ui.pictures.PicturesFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_pictures" />
 
     <fragment
         android:id="@+id/navigation_randomgame"
-        android:name="com.example.project1.ui.gamepager.GamePagerFragment"
+        android:name="com.example.project2.ui.gamepager.GamePagerFragment"
         android:label="@string/title_randomgame"
         tools:layout="@layout/fragment_screen_slide" />
 
     <fragment
         android:id="@+id/navigation_dial"
-        android:name="com.example.project1.ui.Dial.Dial"
+        android:name="com.example.project2.ui.Dial.Dial"
         android:label="@string/title_dial"
         tools:layout="@layout/fragment_dial" />
 </navigation>
