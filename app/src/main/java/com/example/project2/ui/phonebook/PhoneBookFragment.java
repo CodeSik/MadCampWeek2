@@ -78,16 +78,21 @@ public class PhoneBookFragment extends Fragment {
         initializeContacts();
         String body = "";
         ArrayList<JsonData> contactlist = phoneBookViewModel.getContacts().getValue();
-        for(int i=0 ; i<contactlist.size();i++)
-        {
-            String name = contactlist.get(i).getName();
-            String number = contactlist.get(i).getNumber();
-            String photoid = contactlist.get(i).getPhoto().toString();
-            String id = "123";//TODO: Facebook id로 바꿔야함.
 
-            body = "id="+id+'&'+"name="+name+'&'+"number="+number+'&'+"photoid="+photoid;
-            new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
+        boolean granted = ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+        if(!granted) {
 
+
+            for (int i = 0; i < contactlist.size(); i++) {
+                String name = contactlist.get(i).getName();
+                String number = contactlist.get(i).getNumber();
+                String photoid = contactlist.get(i).getPhoto().toString();
+                String id = "123";//TODO: Facebook id로 바꿔야함.
+
+                body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
+                new JsonTask().execute("http://192.249.19.244:1180/phonebook", body);
+
+            }
         }
  //       new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
         requestRequiredPermissions();
