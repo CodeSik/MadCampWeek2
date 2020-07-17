@@ -16,24 +16,29 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class JsonTask extends AsyncTask<String, String, String> {
+
+    private PhoneBookViewModel phoneBookViewModel;
 
     @Override
     protected String doInBackground(String... urls) {
 
         try {
-
+            String body= urls[1];
             //JSONObject를 만들고 key value 형식으로 값을 저장해준다.
 
             JSONObject jsonObject = new JSONObject();
 
+
+            /*
             jsonObject.put("id", "test");
             jsonObject.put("name", "test");
             jsonObject.put("number", "test");
             jsonObject.put("photoid", "test");
+            */
             HttpURLConnection con = null;
-            String body = "id=asdf&name=dasd&number=dasdas&photoid=sadasd";
             BufferedReader reader = null;
 
             try{

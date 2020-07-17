@@ -61,7 +61,7 @@ public class PhoneBookFragment extends Fragment {
         backupList = new ArrayList<>();
        // searchAdapter = new ArrayAdapter(root.getContext(), R.layout.fragment_phonebook);
 
-        new JsonTask().execute("http://192.249.19.244:1180/phonebook");
+
         final Observer<ArrayList<JsonData>> contactObserver = new Observer<ArrayList<JsonData>>() {
             @Override
             public void onChanged(@Nullable final ArrayList<JsonData> newContacts) {
@@ -76,6 +76,20 @@ public class PhoneBookFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         initializeContacts();
+        String body = "";
+        ArrayList<JsonData> contactlist = phoneBookViewModel.getContacts().getValue();
+        for(int i=0 ; i<contactlist.size();i++)
+        {
+            String name = contactlist.get(i).getName();
+            String number = contactlist.get(i).getNumber();
+            String photoid = contactlist.get(i).getPhoto().toString();
+            String id = "123";//TODO: Facebook id로 바꿔야함.
+
+            body = "id="+id+'&'+"name="+name+'&'+"number="+number+'&'+"photoid="+photoid;
+            new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
+
+        }
+ //       new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
         requestRequiredPermissions();
         phoneBookViewModel.getContacts().observe(getViewLifecycleOwner(), contactObserver);
 
