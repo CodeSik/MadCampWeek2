@@ -9,5 +9,7 @@
     <string name="title_argame">AR Game</string>
     <string name="randgame_button_text">Spin!</string>
     <string name="action_search">검색</string>
+    <string name="facebook_app_id">2705838086353459</string>
+    <string name="fb_login_protocol_scheme">fb2705838086353459</string>
 
 </resources>
