@@ -11,5 +11,8 @@
     <string name="action_search">검색</string>
     <string name="facebook_app_id">2705838086353459</string>
     <string name="fb_login_protocol_scheme">fb2705838086353459</string>
+    <string name="camera">📷</string>
+    <string name="gallery">🖼</string>
+    <string name="newimage">newImage</string>
 
 </resources>

@@ -25,7 +25,7 @@ public class PicturesFragment extends Fragment {
         GridView gridView = (GridView) root.findViewById(R.id.grid_view);
         gridView.setAdapter(new picturesAdapter(getActivity()));
 
-        //grid view의 picture click 했을 때, 사진의 position 값 받아서 FullImageActivity에 전달, 실행
+        //grid view의 picture click 했을 때, 사진의 position 값 받아서 FullImageActivity 에 전달, 실행
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

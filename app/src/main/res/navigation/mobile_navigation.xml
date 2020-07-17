@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_pictures"
-        android:name="com.example.project2.ui.pictures.PicturesFragment"
+        android:name="com.example.project2.ui.Gallery.GalleryFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_pictures" />
+        tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/navigation_randomgame"
