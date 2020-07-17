@@ -2,6 +2,7 @@ package com.example.project2.ui.phonebook;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project2.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PhoneBookFragment extends Fragment {
@@ -49,7 +51,6 @@ public class PhoneBookFragment extends Fragment {
     private SearchView searchView;
     private ArrayList<JsonData> backupList ;
 
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         PhoneBookViewModelFactory factory = new PhoneBookViewModelFactory(this.getContext());
@@ -60,7 +61,7 @@ public class PhoneBookFragment extends Fragment {
         backupList = new ArrayList<>();
        // searchAdapter = new ArrayAdapter(root.getContext(), R.layout.fragment_phonebook);
 
-
+        new JsonTask().execute("http://192.249.19.244:1180/phonebook");
         final Observer<ArrayList<JsonData>> contactObserver = new Observer<ArrayList<JsonData>>() {
             @Override
             public void onChanged(@Nullable final ArrayList<JsonData> newContacts) {
@@ -100,6 +101,8 @@ public class PhoneBookFragment extends Fragment {
             else
                 adapter.updateItems(phoneBookViewModel.getContacts().getValue());
                 backupList.addAll(phoneBookViewModel.getContacts().getValue());
+
+
         }
     }
 
@@ -176,7 +179,6 @@ public class PhoneBookFragment extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
 }
 
