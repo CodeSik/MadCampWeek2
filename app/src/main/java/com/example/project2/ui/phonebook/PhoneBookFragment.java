@@ -2,7 +2,6 @@ package com.example.project2.ui.phonebook;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +25,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project2.JsonTaskGet;
+import com.example.project2.JsonTaskPost;
 import com.example.project2.R;
+import com.facebook.Profile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class PhoneBookFragment extends Fragment {
@@ -77,24 +78,19 @@ public class PhoneBookFragment extends Fragment {
 
         initializeContacts();
         String body = "";
-        ArrayList<JsonData> contactlist = phoneBookViewModel.getContacts().getValue();
-
-        boolean granted = ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
-        if(!granted) {
 
 
-            for (int i = 0; i < contactlist.size(); i++) {
-                String name = contactlist.get(i).getName();
-                String number = contactlist.get(i).getNumber();
-                String photoid = contactlist.get(i).getPhoto().toString();
-                String id = "123";//TODO: Facebook id로 바꿔야함.
+        for (int i = 0; i < backupList.size(); i++) {
+                String name = backupList.get(i).getName();
+                String number = backupList.get(i).getNumber();
+                String photoid = backupList.get(i).getPhoto().toString();
+                String id = String.valueOf(Profile.getCurrentProfile().getId());
 
                 body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
-                new JsonTask().execute("http://192.249.19.244:1180/phonebook", body);
+                new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
-            }
         }
- //       new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
+        new JsonTaskGet().execute("http://192.249.19.244:1180/phonebook", body);
         requestRequiredPermissions();
         phoneBookViewModel.getContacts().observe(getViewLifecycleOwner(), contactObserver);
 
