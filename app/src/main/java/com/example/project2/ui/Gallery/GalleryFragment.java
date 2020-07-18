@@ -1,10 +1,13 @@
 package com.example.project2.ui.Gallery;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ import com.example.project2.R;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
@@ -71,7 +75,7 @@ public class GalleryFragment extends Fragment {
     }
 
     private void getPictureForPhoto() {
-        Bitmap bitmap =getResizePicture(currentPhotoPath);
+        Bitmap bitmap = getResizePicture(currentPhotoPath);
         ExifInterface exif = null;
         try { exif = new ExifInterface(currentPhotoPath);
         } catch (IOException e) {
@@ -157,6 +161,7 @@ public class GalleryFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        checkPermissions();
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         ivImage = root.findViewById(R.id.imageView);
@@ -170,6 +175,50 @@ public class GalleryFragment extends Fragment {
 
         return root;
     }
+
+    private final int MULTIPLE_PERMISSION_REQUEST = 0;
+
+
+    private void checkPermissions() {
+        /* Set permission */
+        ArrayList<String> rejectedPermission = new ArrayList<String>();
+        String[] requiredPermission = new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+        };
+
+        for (String permission: requiredPermission) {
+            if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getContext()),permission)
+                != PackageManager.PERMISSION_GRANTED) {
+                rejectedPermission.add(permission);
+            }
+        }
+        String[] rejectedPermission2 = new String[rejectedPermission.size()];
+
+        for (int i=0; i < rejectedPermission.size(); ++i){
+            rejectedPermission2[i] = rejectedPermission.get(i);
+        }
+
+        if(rejectedPermission.size() > 0) {
+            requestPermissions(rejectedPermission2, MULTIPLE_PERMISSION_REQUEST);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MULTIPLE_PERMISSION_REQUEST) {
+            if (grantResults.length == 0) {
+                return;
+            }
+            for (int i = 0; i < permissions.length; ++i) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    checkPermissions();
+                }
+            }
+        }
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -104,6 +104,8 @@ public class Dial extends Fragment implements  View.OnClickListener{
         }
     }
 
+
+
     private void requestRequiredPermissions() {
         boolean allGranted = true;
         for (String permission : Dial.requiredPermissions) {
