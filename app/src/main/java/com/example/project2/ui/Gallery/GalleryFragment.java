@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -111,6 +112,7 @@ public class GalleryFragment extends Fragment {
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
         //ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
         mBitmap = finalBitmap;
+        ivImage.setImageBitmap(finalBitmap);
     }
 
 
@@ -168,21 +170,7 @@ public class GalleryFragment extends Fragment {
         if(cursor.moveToFirst()){ column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         } return cursor.getString(column_index);
     }
-//    Uri picUri;
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putParcelable("pic_uri", picUri);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        picUri = savedInstanceState.getParcelable("pic_uri");
-//    }
+
 
     private void multipartImageUpload() {
         try {
@@ -199,18 +187,16 @@ public class GalleryFragment extends Fragment {
             fos.flush();
             fos.close();
 
-
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
-            RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "upload");
-
-            Call<ResponseBody> req = apiService.postImage(body, name);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("photo", file.getName(), reqFile);
+            RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "photo");
+            retrofit2.Call<okhttp3.ResponseBody> req = apiService.postImage(body, name);
             req.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                     if (response.code() == 200) {
-                        Toast.makeText(getContext(), response.code() + "upload success", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "upload success", Toast.LENGTH_SHORT).show();
                     }
                     Toast.makeText(getContext(), response.code() + " ", Toast.LENGTH_SHORT).show();
                 }
@@ -228,6 +214,7 @@ public class GalleryFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    mBitmap = null;
     }
 
 
@@ -243,13 +230,13 @@ public class GalleryFragment extends Fragment {
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
 
         //이미지 뷰에 비트맵 넣기
-        //ivImage.setImageBitmap(finalBitmap);
         mBitmap = finalBitmap;
+        ivImage.setImageBitmap(finalBitmap);
     }
     ApiService apiService;
     private void initRetrofitClient() {
         OkHttpClient client = new OkHttpClient.Builder().build();
-        apiService = new Retrofit.Builder().baseUrl("https://192.249.19.244:1180").client(client).build().create(ApiService.class);
+        apiService = new Retrofit.Builder().baseUrl("http://192.249.19.244:1180/").client(client).build().create(ApiService.class);
     }
 
 
@@ -259,7 +246,7 @@ public class GalleryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         ArrayList<String> list = new ArrayList<>();
         for (int i=0; i<100; i++) {
-            list.add(String.format("TEXT %d", i)) ;
+            list.add(String.format("TEXT %d", i));
         }
 
         RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
@@ -268,38 +255,58 @@ public class GalleryFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
 
-        ivImage = root.findViewById(R.id.photo);
+        ivImage = root.findViewById(R.id.picked_Image);
         checkPermissions();
         initRetrofitClient();
         Button uploadButton = root.findViewById(R.id.upload_Button);
-        Button galleryButton = root.findViewById(R.id.gallery_button);
         Button cameraButton = root.findViewById(R.id.camera_button);
+        Button galleryButton = root.findViewById(R.id.gallery_button);
+        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
+        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
 
         galleryButton.setOnClickListener(v -> {
             selectGallery();
+            recycler.setVisibility(View.INVISIBLE);
+            linearLayout.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
-            galleryButton.setVisibility(View.INVISIBLE);
-            cameraButton.setVisibility(View.INVISIBLE);
 
             uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null)
+                if (mBitmap != null) {
                     multipartImageUpload();
+                }
                 else {
                     Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
                 }
-
+                recycler.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.INVISIBLE);
-                galleryButton.setVisibility(View.VISIBLE);
-                cameraButton.setVisibility(View.VISIBLE);
+                ivImage.setImageResource(0);
             });
         });
 
         cameraButton.setOnClickListener(v -> {
             selectPhoto();
+            recycler.setVisibility(View.INVISIBLE);
+            linearLayout.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
-            galleryButton.setVisibility(View.INVISIBLE);
-            cameraButton.setVisibility(View.INVISIBLE);
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null){
+                    multipartImageUpload();
+                }
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+                recycler.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+                ivImage.setImageResource(0);
+            });
         });
+
 
         return root;
     }
