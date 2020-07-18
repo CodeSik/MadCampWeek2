@@ -6,16 +6,20 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -24,12 +28,26 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.project2.R;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class GalleryFragment extends Fragment {
@@ -40,6 +58,7 @@ public class GalleryFragment extends Fragment {
     private final int GALLERY_CODE=1112;
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
+    Bitmap mBitmap;
 
     private void selectPhoto() {
         String state = Environment.getExternalStorageState();
@@ -90,6 +109,7 @@ public class GalleryFragment extends Fragment {
         }
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
         //ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
+        mBitmap = finalBitmap;
     }
 
 
@@ -147,6 +167,68 @@ public class GalleryFragment extends Fragment {
         if(cursor.moveToFirst()){ column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         } return cursor.getString(column_index);
     }
+//    Uri picUri;
+//
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putParcelable("pic_uri", picUri);
+//    }
+//
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//
+//        picUri = savedInstanceState.getParcelable("pic_uri");
+//    }
+
+    private void multipartImageUpload() {
+        try {
+            File filesDir = getContext().getFilesDir();
+            File file = new File(filesDir, "image" + ".png");
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] bitmapdata = bos.toByteArray();
+
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+
+
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
+            RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "upload");
+
+            Call<ResponseBody> req = apiService.postImage(body, name);
+            req.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                    if (response.code() == 200) {
+                        Toast.makeText(getContext(), response.code() + "upload success", Toast.LENGTH_SHORT).show();
+                    }
+                    Toast.makeText(getContext(), response.code() + " ", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void sendPicture(Uri imgUri) {
         String imagePath = getRealPathFromURI(imgUri); // path 경로
@@ -161,8 +243,13 @@ public class GalleryFragment extends Fragment {
 
         //이미지 뷰에 비트맵 넣기
         //ivImage.setImageBitmap(finalBitmap);
+        mBitmap = finalBitmap;
     }
-
+    ApiService apiService;
+    private void initRetrofitClient() {
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        apiService = new Retrofit.Builder().baseUrl("https://192.249.19.244:1180").client(client).build().create(ApiService.class);
+    }
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -182,15 +269,35 @@ public class GalleryFragment extends Fragment {
 
         ivImage = root.findViewById(R.id.photo);
         checkPermissions();
+        initRetrofitClient();
+        Button uploadButton = root.findViewById(R.id.upload_Button);
         Button galleryButton = root.findViewById(R.id.gallery_button);
+        Button cameraButton = root.findViewById(R.id.camera_button);
+
         galleryButton.setOnClickListener(v -> {
             selectGallery();
+            uploadButton.setVisibility(View.VISIBLE);
+            galleryButton.setVisibility(View.INVISIBLE);
+            cameraButton.setVisibility(View.INVISIBLE);
+
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null)
+                    multipartImageUpload();
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+
+                uploadButton.setVisibility(View.INVISIBLE);
+                galleryButton.setVisibility(View.VISIBLE);
+                cameraButton.setVisibility(View.VISIBLE);
+            });
         });
 
-        Button cameraButton = root.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener(v -> {
             selectPhoto();
-
+            uploadButton.setVisibility(View.VISIBLE);
+            galleryButton.setVisibility(View.INVISIBLE);
+            cameraButton.setVisibility(View.INVISIBLE);
         });
 
         return root;

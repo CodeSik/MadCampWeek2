@@ -80,6 +80,7 @@ public class LoadingActivity extends Activity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         //startLoading();
+
     }
 
     private void startLoading() {
