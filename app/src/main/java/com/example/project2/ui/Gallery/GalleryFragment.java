@@ -89,7 +89,7 @@ public class GalleryFragment extends Fragment {
             exifDegree = 0;
         }
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
-        ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
+        //ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
     }
 
 
@@ -160,7 +160,7 @@ public class GalleryFragment extends Fragment {
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
 
         //이미지 뷰에 비트맵 넣기
-        ivImage.setImageBitmap(finalBitmap);
+        //ivImage.setImageBitmap(finalBitmap);
     }
 
 
