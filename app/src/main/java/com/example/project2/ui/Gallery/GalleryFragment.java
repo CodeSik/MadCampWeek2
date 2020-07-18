@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import androidx.core.content.ContextCompat;
-import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,8 +17,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.project2.R;
 import java.io.File;
 import java.io.IOException;
@@ -29,16 +31,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
+
 public class GalleryFragment extends Fragment {
 
     private static final int RESULT_OK = -1;
     public ImageView ivImage;
-    public GalleryFragment() {
-    }
-
     private final int CAMERA_CODE = 1111;
     private final int GALLERY_CODE=1112;
-
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
 
@@ -89,8 +88,10 @@ public class GalleryFragment extends Fragment {
         } else {
             exifDegree = 0;
         }
-        ivImage.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+        Bitmap finalBitmap = rotate(bitmap, exifDegree);
+        ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
     }
+
 
     private void selectGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -103,7 +104,7 @@ public class GalleryFragment extends Fragment {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, options);
-        int resize = 1000;
+        int resize = 100;
         int width = options.outWidth;
         int height = options.outHeight;
         int sampleSize = 1;
@@ -153,33 +154,52 @@ public class GalleryFragment extends Fragment {
         try { exif = new ExifInterface(imagePath); } catch (IOException e) { e.printStackTrace(); }
         int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
         int exifDegree = exifOrientationToDegrees(exifOrientation);
-        Bitmap bitmap = getResizePicture(imagePath);
+
         //경로를 통해 비트맵으로 전환
-        ivImage.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
-        }
+        Bitmap bitmap = getResizePicture(imagePath);
+        Bitmap finalBitmap = rotate(bitmap, exifDegree);
+
+        //이미지 뷰에 비트맵 넣기
+        ivImage.setImageBitmap(finalBitmap);
+    }
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        checkPermissions();
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        ivImage = root.findViewById(R.id.imageView);
+        ArrayList<String> list = new ArrayList<>();
+        for (int i=0; i<100; i++) {
+            list.add(String.format("TEXT %d", i)) ;
+        }
 
+        RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
+        GalleryAdapter adapter = new GalleryAdapter(list);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
+
+
+        ivImage = root.findViewById(R.id.photo);
+        checkPermissions();
         Button galleryButton = root.findViewById(R.id.gallery_button);
-        galleryButton.setOnClickListener(v -> selectGallery());
+        galleryButton.setOnClickListener(v -> {
+            selectGallery();
+        });
 
         Button cameraButton = root.findViewById(R.id.camera_button);
-        cameraButton.setOnClickListener(v -> selectPhoto());
+        cameraButton.setOnClickListener(v -> {
+            selectPhoto();
 
+        });
 
         return root;
     }
 
-    private final int MULTIPLE_PERMISSION_REQUEST = 0;
+    final int MULTIPLE_PERMISSION_REQUEST = 0;
 
 
-    private void checkPermissions() {
+    private void checkPermissions(){
         /* Set permission */
         ArrayList<String> rejectedPermission = new ArrayList<String>();
         String[] requiredPermission = new String[]{
@@ -237,4 +257,3 @@ public class GalleryFragment extends Fragment {
 }
 
 }
-

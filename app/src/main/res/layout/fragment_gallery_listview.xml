@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp"
     android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="5dp"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    >
+    app:layout_constraintTop_toTopOf="parent">
+
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:background="@drawable/rectangular_button"
-        >
+        android:orientation="horizontal">
+
         <androidx.cardview.widget.CardView
-            android:layout_height="100dp"
             android:layout_width="100dp"
-            app:cardElevation="0dp"
-            app:cardCornerRadius="15dp"
-            android:layout_marginRight="10dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
+            android:layout_marginRight="10dp"
             android:backgroundTint="@android:color/transparent"
-            >
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp">
+
             <ImageView
-                android:id="@+id/photo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                tools:srcCompat="@tools:sample/backgrounds/scenic[2]" />
+                android:id="@+id/profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/bottle_soju" />
         </androidx.cardview.widget.CardView>
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -67,56 +66,57 @@
                     android:layout_weight="1"
                     android:layout_marginTop="4dp"
                     android:text="email" />
+
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
-    <LinearLayout
+
+    <ImageView
+        android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:gravity="center"
+        app:srcCompat="@drawable/cloud"
+        android:contentDescription="TODO" />
+
+    <LinearLayout
         android:id="@+id/expandable_list"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        android:gravity="center">
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+
+
         <ImageButton
-            android:id="@+id/call_button"
+            android:id="@+id/like_Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_outline_phone_28"
-            />
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            />
-        <ImageButton
-            android:id="@+id/sms_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_outline_textsms_28"
-            />
+            android:paddingStart="10dp"
+            app:srcCompat="@drawable/emptyheart" />
 
         <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3" />
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/follow_button"
+            android:id="@+id/like_list_Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="팔로우" />
+            android:background = "#00FF0000"
+            android:text="누가 좋아요를 눌렀을까요~?" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
 </LinearLayout>

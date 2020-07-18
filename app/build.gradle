@@ -55,6 +55,7 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:design:29.0.0'
     // bottomNavigationView
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 }
 
 apply plugin: 'com.google.ar.sceneform.plugin'

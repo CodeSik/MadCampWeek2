@@ -9,9 +9,11 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +40,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
         private TextView email;
         private ImageButton callButton;
         private ImageButton smsButton;
+        private Button followButton;
         private View expandableList;
 
         public PhoneBookViewHolder(View itemView) {
@@ -50,6 +53,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
             expandableList = itemView.findViewById(R.id.expandable_list);
             callButton = itemView.findViewById(R.id.call_button);
             smsButton = itemView.findViewById(R.id.sms_button);
+            followButton = itemView.findViewById(R.id.follow_button);
         }
 
         public void bind(final JsonData item) {
@@ -83,6 +87,12 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
                         Intent send = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + item.getNumber()));
                         context.startActivity(send);
                     }
+                }
+            });
+
+            followButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //follow action
                 }
             });
         }
