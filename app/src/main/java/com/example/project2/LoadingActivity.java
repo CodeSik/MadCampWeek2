@@ -20,6 +20,9 @@ import java.util.Arrays;
 
 public class LoadingActivity extends Activity {
     private CallbackManager callbackManager;
+    private final long FINISH_INTERVAL_TIME = 2000;
+    private long   backPressedTime = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +67,19 @@ public class LoadingActivity extends Activity {
 
 
     }
+    @Override
+    public void onBackPressed()
+    {
+        //super.onBackPressed();
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-        startLoading();
+        //startLoading();
     }
 
     private void startLoading() {
