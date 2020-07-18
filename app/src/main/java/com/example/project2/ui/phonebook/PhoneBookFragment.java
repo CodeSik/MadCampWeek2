@@ -2,6 +2,7 @@ package com.example.project2.ui.phonebook;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project2.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PhoneBookFragment extends Fragment {
@@ -48,7 +50,6 @@ public class PhoneBookFragment extends Fragment {
     private ArrayAdapter searchAdapter;
     private SearchView searchView;
     private ArrayList<JsonData> backupList ;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -75,6 +76,25 @@ public class PhoneBookFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         initializeContacts();
+        String body = "";
+        ArrayList<JsonData> contactlist = phoneBookViewModel.getContacts().getValue();
+
+        boolean granted = ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+        if(!granted) {
+
+
+            for (int i = 0; i < contactlist.size(); i++) {
+                String name = contactlist.get(i).getName();
+                String number = contactlist.get(i).getNumber();
+                String photoid = contactlist.get(i).getPhoto().toString();
+                String id = "123";//TODO: Facebook id로 바꿔야함.
+
+                body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
+                new JsonTask().execute("http://192.249.19.244:1180/phonebook", body);
+
+            }
+        }
+ //       new JsonTask().execute("http://192.249.19.244:1180/phonebook",body);
         requestRequiredPermissions();
         phoneBookViewModel.getContacts().observe(getViewLifecycleOwner(), contactObserver);
 
@@ -100,6 +120,8 @@ public class PhoneBookFragment extends Fragment {
             else
                 adapter.updateItems(phoneBookViewModel.getContacts().getValue());
                 backupList.addAll(phoneBookViewModel.getContacts().getValue());
+
+
         }
     }
 
@@ -176,7 +198,6 @@ public class PhoneBookFragment extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
 }
 
