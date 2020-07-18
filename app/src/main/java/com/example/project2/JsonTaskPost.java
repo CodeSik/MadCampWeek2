@@ -2,9 +2,6 @@ package com.example.project2;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.example.project2.ui.phonebook.PhoneBookViewModel;
 
 import org.json.JSONObject;
 
@@ -18,11 +15,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class JsonTaskPost extends AsyncTask<String, String, String> {
 
-    private PhoneBookViewModel phoneBookViewModel;
 
     @Override
     protected String doInBackground(String... urls) {

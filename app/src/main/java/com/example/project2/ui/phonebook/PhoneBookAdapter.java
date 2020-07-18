@@ -64,9 +64,9 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
             name.setText(item.getName());
             number.setText(item.getNumber());
             email.setText(item.getEmail());
-            photo.setImageURI(item.getPhoto());
-            if (photo.getDrawable() == null)
-                photo.setImageResource(R.drawable.ic_profile_placeholder);
+          //  photo.setImageURI(item.getPhoto());
+          //  if (photo.getDrawable() == null)
+        //        photo.setImageResource(R.drawable.ic_profile_placeholder);
 
             callButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

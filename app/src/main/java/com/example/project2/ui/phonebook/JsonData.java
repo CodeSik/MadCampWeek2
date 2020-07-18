@@ -6,23 +6,23 @@ public class JsonData {
     private String name;
     private String number;
     private String email;
-    private Uri photo;
+    private String photo;
     private boolean expanded;
 
     public JsonData() { }
 
-    public JsonData(String name, String number, String email, Uri photo) {
+    public JsonData(String name, String number, String email, String photo) {
         this.name = name;
         this.number = number;
         this.email = email;
         this.photo = photo;
     }
 
-    public Uri getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(Uri photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 

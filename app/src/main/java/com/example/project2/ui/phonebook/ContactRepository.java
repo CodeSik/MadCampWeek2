@@ -84,9 +84,9 @@ public class ContactRepository {
             String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             String number = fetchPhoneNumber(cr, id);
             String email = fetchEmail(cr, id);
-            Uri photo = fetchPhotoUri(cr, id);
 
-            contacts.add(new JsonData(name, number, email, photo));
+
+            contacts.add(new JsonData(name, number, email, id));
         }
 
         if (cur != null)

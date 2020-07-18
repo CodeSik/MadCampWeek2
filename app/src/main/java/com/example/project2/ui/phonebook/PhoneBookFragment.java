@@ -2,6 +2,7 @@ package com.example.project2.ui.phonebook;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,17 @@ import com.example.project2.JsonTaskPost;
 import com.example.project2.R;
 import com.facebook.Profile;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class PhoneBookFragment extends Fragment {
@@ -42,7 +54,6 @@ public class PhoneBookFragment extends Fragment {
             Manifest.permission.SEND_SMS,
             Manifest.permission.CALL_PHONE
     };
-    private PhoneBookViewModel phoneBookViewModel;
 
     private PhoneBookAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -50,49 +61,42 @@ public class PhoneBookFragment extends Fragment {
     private ListView listview;
     private ArrayAdapter searchAdapter;
     private SearchView searchView;
-    private ArrayList<JsonData> backupList ;
+    private ArrayList<JsonData> inAppContact;
+    private ArrayList<JsonData> serverContact;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        PhoneBookViewModelFactory factory = new PhoneBookViewModelFactory(this.getContext());
-        phoneBookViewModel = ViewModelProviders.of(getActivity(), factory).get(PhoneBookViewModel.class);
+        requestRequiredPermissions();
+
         View root = inflater.inflate(R.layout.fragment_phonebook, container, false);
 
         adapter = new PhoneBookAdapter(new ArrayList<JsonData>(), getContext());
-        backupList = new ArrayList<>();
-       // searchAdapter = new ArrayAdapter(root.getContext(), R.layout.fragment_phonebook);
 
 
-        final Observer<ArrayList<JsonData>> contactObserver = new Observer<ArrayList<JsonData>>() {
-            @Override
-            public void onChanged(@Nullable final ArrayList<JsonData> newContacts) {
-                adapter.updateItems(newContacts);
-            }
-        };
-
+        String body = "";
+        ContactRepository repository = new ContactRepository(this.getContext());
+        inAppContact = repository.getContactList();
+        initializeContacts();
         RecyclerView recyclerView = root.findViewById(R.id.pb_recycler_view);
         recyclerView.setAdapter(adapter);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-        initializeContacts();
-        String body = "";
 
+        for (int i = 0; i < inAppContact.size(); i++) {
+            String name = inAppContact.get(i).getName();
+            String number = inAppContact.get(i).getNumber();
+            String photoid = inAppContact.get(i).getPhoto().toString();
+//            String id = String.valueOf(Profile.getCurrentProfile().getId());
+            String id = "123";
 
-        for (int i = 0; i < backupList.size(); i++) {
-                String name = backupList.get(i).getName();
-                String number = backupList.get(i).getNumber();
-                String photoid = backupList.get(i).getPhoto().toString();
-                String id = String.valueOf(Profile.getCurrentProfile().getId());
-
-                body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
-                new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
+            body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
+            new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
         }
         new JsonTaskGet().execute("http://192.249.19.244:1180/phonebook", body);
-        requestRequiredPermissions();
-        phoneBookViewModel.getContacts().observe(getViewLifecycleOwner(), contactObserver);
+
 
         setHasOptionsMenu(true); // For option menu
         return root;
@@ -104,20 +108,13 @@ public class PhoneBookFragment extends Fragment {
             case PERMISSIONS_REQUEST_READ_CONTACTS:
             case PERMISSIONS_REQUEST_ALL:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    phoneBookViewModel.initializeContacts();
+                    initializeContacts();
         }
     }
 
     private void initializeContacts() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            ArrayList<JsonData> data = phoneBookViewModel.getContacts().getValue();
-            if (data == null)
-                phoneBookViewModel.initializeContacts();
-            else
-                adapter.updateItems(phoneBookViewModel.getContacts().getValue());
-                backupList.addAll(phoneBookViewModel.getContacts().getValue());
-
-
+            adapter.updateItems(inAppContact);
         }
     }
 
@@ -145,9 +142,9 @@ public class PhoneBookFragment extends Fragment {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-               // listview.setAdapter(searchAdapter);
+                // listview.setAdapter(searchAdapter);
                 //adapter.fillter(query);
-                Log.d("submitted: ",query);
+                Log.d("submitted: ", query);
                 return false;
 
             }
@@ -155,18 +152,14 @@ public class PhoneBookFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
 
-
-                Log.d("Changed: ",newText+backupList.size());
                 //TODO: 필터 관련 소스 Filterable 인터페이스를 Adapter 클래스에 구현하자.
                 // Here is where we are going to implement the filter logic
 
-                if(newText.length() >0)
-                {
-                    adapter.fillter(newText,backupList); // 필터를 통해서 현재 보여주는 값 수정함.
+                if (newText.length() > 0) {
+                    adapter.fillter(newText, serverContact); // 필터를 통해서 현재 보여주는 값 수정함.
                     //TODO: 현재 검색이 안될 경우 clear를 통해 초기화 됌. 최종으로 축소되었을때 backup
-                    Log.d("Changed: ",newText+backupList.size());
-                }
-                else{
+
+                } else {
 
                 }
                 return true;
@@ -185,7 +178,7 @@ public class PhoneBookFragment extends Fragment {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 adapter.getListViewItemList().clear();
-                adapter.getListViewItemList().addAll(backupList);
+                adapter.getListViewItemList().addAll(serverContact);
                 adapter.notifyDataSetChanged();
 
                 return true;
@@ -195,5 +188,105 @@ public class PhoneBookFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-}
+    public void jsonParsing(String json) throws JSONException {
+        JSONArray jarray = new JSONArray(json);
 
+        for (int i = 0; i < jarray.length(); i++) {
+            JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+            String id = jObject.getString("id");
+            String name = jObject.getString("name");
+            String number = jObject.getString("number");
+            JsonData data = new JsonData(name,number,id,id);
+            serverContact.add(data);
+        }
+
+    }
+
+    public class JsonTaskGet extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+                try{
+                    URL url = new URL(urls[0]);
+                    con = (HttpURLConnection) url.openConnection();
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while((line = reader.readLine()) != null){
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+
+
+
+                } catch (MalformedURLException e){
+
+                    e.printStackTrace();
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                } finally {
+
+                    if(con != null){
+
+                        con.disconnect();
+
+                    }
+
+                    try {
+
+                        if(reader != null){
+
+                            reader.close();//버퍼를 닫아줌
+
+                        }
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                }
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+            return null;
+
+        }
+
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            try {
+                jsonParsing(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d("printget",result);
+        }
+
+    }
+}
