@@ -114,7 +114,7 @@ public class PhoneBookFragment extends Fragment {
 
     private void initializeContacts() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            adapter.updateItems(inAppContact);
+            adapter.updateItems(inAppContact);//serverContact로 바꿔야함.
         }
     }
 
