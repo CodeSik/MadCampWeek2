@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project2.JsonTaskGet;
 import com.example.project2.JsonTaskPost;
 import com.example.project2.R;
 import com.facebook.Profile;
@@ -89,7 +90,7 @@ public class PhoneBookFragment extends Fragment {
                 new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
         }
-
+        new JsonTaskGet().execute("http://192.249.19.244:1180/phonebook", body);
         requestRequiredPermissions();
         phoneBookViewModel.getContacts().observe(getViewLifecycleOwner(), contactObserver);
 
