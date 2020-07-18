@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -46,9 +46,11 @@ public class LoadingActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Log.d("Success", String.valueOf(loginResult.getAccessToken()));
-                Log.d("Success", String.valueOf(Profile.getCurrentProfile().getId()));
-                Log.d("Success", String.valueOf(Profile.getCurrentProfile().getName()));
+                String id = String.valueOf(Profile.getCurrentProfile().getId());
+                String name= String.valueOf(Profile.getCurrentProfile().getName());
+
+                String body = "id=" + id + '&' + "name=" + name;
+                new JsonTaskPost().execute("http://192.249.19.244:1180/users", body);
                 Toast.makeText(getApplicationContext(), String.valueOf(Profile.getCurrentProfile().getName()) , Toast.LENGTH_LONG).show();
             }
 
@@ -79,7 +81,7 @@ public class LoadingActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-        //startLoading();
+        startLoading();
     }
 
     private void startLoading() {

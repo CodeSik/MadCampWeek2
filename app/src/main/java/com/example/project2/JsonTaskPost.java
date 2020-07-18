@@ -1,8 +1,10 @@
-package com.example.project2.ui.phonebook;
+package com.example.project2;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.project2.ui.phonebook.PhoneBookViewModel;
 
 import org.json.JSONObject;
 
@@ -18,7 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class JsonTask extends AsyncTask<String, String, String> {
+public class JsonTaskPost extends AsyncTask<String, String, String> {
 
     private PhoneBookViewModel phoneBookViewModel;
 
@@ -55,7 +57,7 @@ public class JsonTask extends AsyncTask<String, String, String> {
                // con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
                 //Log.d("josn",jsonObject.toString());
                 con.connect();
-                Log.d("josn",jsonObject.toString());
+                Log.d("josn",body);
                 //서버로 보내기위해서 스트림 만듬
 
                 OutputStream outStream = con.getOutputStream();
