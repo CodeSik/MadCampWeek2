@@ -1,6 +1,7 @@
 package com.example.project2.ui.phonebook;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
@@ -64,19 +66,25 @@ public class PhoneBookFragment extends Fragment {
     private ArrayList<JsonData> inAppContact;
     private ArrayList<JsonData> serverContact;
 
+    public ArrayList<JsonData> getServerContact() {
+        return serverContact;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+
         requestRequiredPermissions();
-
         View root = inflater.inflate(R.layout.fragment_phonebook, container, false);
-
         adapter = new PhoneBookAdapter(new ArrayList<JsonData>(), getContext());
 
 
         String body = "";
         ContactRepository repository = new ContactRepository(this.getContext());
         inAppContact = repository.getContactList();
-        initializeContacts();
+        serverContact= new ArrayList<>();
+        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook");
+
         RecyclerView recyclerView = root.findViewById(R.id.pb_recycler_view);
         recyclerView.setAdapter(adapter);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -95,9 +103,9 @@ public class PhoneBookFragment extends Fragment {
             new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
         }
-        new JsonTaskGet().execute("http://192.249.19.244:1180/phonebook", body);
 
 
+        initializeContacts();
         setHasOptionsMenu(true); // For option menu
         return root;
     }
@@ -114,7 +122,8 @@ public class PhoneBookFragment extends Fragment {
 
     private void initializeContacts() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            adapter.updateItems(inAppContact);//serverContact로 바꿔야함.
+            adapter.updateItems(serverContact);//serverContact로 바꿔야함.
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -157,6 +166,7 @@ public class PhoneBookFragment extends Fragment {
 
                 if (newText.length() > 0) {
                     adapter.fillter(newText, serverContact); // 필터를 통해서 현재 보여주는 값 수정함.
+                    adapter.notifyDataSetChanged();
                     //TODO: 현재 검색이 안될 경우 clear를 통해 초기화 됌. 최종으로 축소되었을때 backup
 
                 } else {
@@ -188,31 +198,59 @@ public class PhoneBookFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void jsonParsing(String json) throws JSONException {
-        JSONArray jarray = new JSONArray(json);
 
-        for (int i = 0; i < jarray.length(); i++) {
-            JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-            String id = jObject.getString("id");
-            String name = jObject.getString("name");
-            String number = jObject.getString("number");
-            JsonData data = new JsonData(name,number,id,id);
-            serverContact.add(data);
-        }
+    public void jsonParsing(String json) throws JSONException {
+
+            JSONArray jarray = new JSONArray(json);
+            //  ArrayList<JsonData> datalist = new ArrayList<>();
+            for (int i = 0; i < jarray.length(); i++) {
+                JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                String id = jObject.getString("id");
+                String name = jObject.getString("name");
+                String number = jObject.getString("number");
+                JsonData data = new JsonData(name, number, id, id);
+                serverContact.add(data);;
+                adapter.notifyDataSetChanged();
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
 
     }
 
-    public class JsonTaskGet extends AsyncTask<String, String, String> {
+
+    public class JsonTaskGetPhone extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+
+
+            dialog = new ProgressDialog(getContext());
+
+            //dialog.setCancelable(false);
+
+            dialog.show();
+
+        }
 
         @Override
         protected String doInBackground(String... urls) {
 
             try {
+
                 HttpURLConnection con = null;
                 BufferedReader reader = null;
+
                 try{
                     URL url = new URL(urls[0]);
+                    //연결을 함
                     con = (HttpURLConnection) url.openConnection();
+
+
                     con.connect();
 
                     InputStream stream = con.getInputStream();
@@ -280,13 +318,38 @@ public class PhoneBookFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            adapter.getListViewItemList().clear();
             try {
-                jsonParsing(result);
-            } catch (JSONException e) {
+                JSONArray jarray = new JSONArray(result);
+                //  ArrayList<JsonData> datalist = new ArrayList<>();
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String name = jObject.getString("name");
+                    String number = jObject.getString("number");
+                    JsonData data = new JsonData(name, number, id, id);
+                    serverContact.add(data);
+                }
+
+
+            }catch (JSONException e) {
+
                 e.printStackTrace();
+
             }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.updateItems(serverContact);
+                    adapter.notifyDataSetChanged();
+                }
+            });
             Log.d("printget",result);
         }
 
     }
+
+
 }

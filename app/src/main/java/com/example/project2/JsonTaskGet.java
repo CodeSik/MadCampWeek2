@@ -1,7 +1,13 @@
 package com.example.project2;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
+
+import androidx.fragment.app.Fragment;
+
+import com.example.project2.ui.phonebook.JsonData;
+import com.example.project2.ui.phonebook.PhoneBookFragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +16,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class JsonTaskGet extends AsyncTask<String, String, String> {
+
+    private Fragment fragment;
+    private PhoneBookFragment phoneBookFragment;
 
     @Override
     protected String doInBackground(String... urls) {
@@ -94,6 +104,10 @@ public class JsonTaskGet extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
+        phoneBookFragment= new PhoneBookFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("result",result);
+        phoneBookFragment.setArguments(bundle);
         Log.d("printget",result);
     }
 
