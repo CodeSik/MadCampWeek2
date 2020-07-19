@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.project2.R;
 
 import java.util.ArrayList;
@@ -48,7 +49,6 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
 
             name = itemView.findViewById(R.id.name);
             number = itemView.findViewById(R.id.number);
-            email = itemView.findViewById(R.id.email);
             photo = itemView.findViewById(R.id.photo);
             expandableList = itemView.findViewById(R.id.expandable_list);
             callButton = itemView.findViewById(R.id.call_button);
@@ -60,13 +60,9 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
             boolean expanded = item.getExpanded();
 
             expandableList.setVisibility(expanded ? View.VISIBLE : View.GONE);
-
             name.setText(item.getName());
             number.setText(item.getNumber());
-            email.setText(item.getEmail());
-          //  photo.setImageURI(item.getPhoto());
-          //  if (photo.getDrawable() == null)
-        //        photo.setImageResource(R.drawable.ic_profile_placeholder);
+            Glide.with(context).load(item.getPhoto()).into(photo);
 
             callButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

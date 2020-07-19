@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
+import com.facebook.Profile;
+
 import java.util.ArrayList;
 
 public class ContactRepository {
@@ -50,6 +52,7 @@ public class ContactRepository {
         return email;
     }
 
+
     private Uri fetchPhotoUri(ContentResolver cr, String id) {
         try {
             Cursor cursor = cr.query(
@@ -80,13 +83,13 @@ public class ContactRepository {
             return contacts;
 
         while (cur != null && cur.moveToNext()) {
-            String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+            String id = String.valueOf(Profile.getCurrentProfile().getId());
             String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             String number = fetchPhoneNumber(cr, id);
-            String email = fetchEmail(cr, id);
+            String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
 
 
-            contacts.add(new JsonData(name, number, email, id));
+            contacts.add(new JsonData(id, name, number, photo));
         }
 
         if (cur != null)

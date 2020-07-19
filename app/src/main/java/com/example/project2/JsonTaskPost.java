@@ -26,15 +26,7 @@ public class JsonTaskPost extends AsyncTask<String, String, String> {
             String body= urls[1];
             //JSONObject를 만들고 key value 형식으로 값을 저장해준다.
 
-            JSONObject jsonObject = new JSONObject();
 
-
-            /*
-            jsonObject.put("id", "test");
-            jsonObject.put("name", "test");
-            jsonObject.put("number", "test");
-            jsonObject.put("photoid", "test");
-            */
             HttpURLConnection con = null;
             BufferedReader reader = null;
 

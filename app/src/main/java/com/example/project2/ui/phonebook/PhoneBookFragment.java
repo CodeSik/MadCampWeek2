@@ -93,13 +93,13 @@ public class PhoneBookFragment extends Fragment {
 
 
         for (int i = 0; i < inAppContact.size(); i++) {
+            String id = String.valueOf(Profile.getCurrentProfile().getId());
             String name = inAppContact.get(i).getName();
             String number = inAppContact.get(i).getNumber();
-            String photoid = inAppContact.get(i).getPhoto().toString();
-//            String id = String.valueOf(Profile.getCurrentProfile().getId());
-            String id = "123";
+            String photo = inAppContact.get(i).getPhoto();
 
-            body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photoid=" + photoid;
+
+            body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photo=" + photo;
             new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
         }
@@ -199,27 +199,7 @@ public class PhoneBookFragment extends Fragment {
     }
 
 
-    public void jsonParsing(String json) throws JSONException {
 
-            JSONArray jarray = new JSONArray(json);
-            //  ArrayList<JsonData> datalist = new ArrayList<>();
-            for (int i = 0; i < jarray.length(); i++) {
-                JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-                String id = jObject.getString("id");
-                String name = jObject.getString("name");
-                String number = jObject.getString("number");
-                JsonData data = new JsonData(name, number, id, id);
-                serverContact.add(data);;
-                adapter.notifyDataSetChanged();
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
-
-    }
 
 
     public class JsonTaskGetPhone extends AsyncTask<String, String, String> {
@@ -329,7 +309,8 @@ public class PhoneBookFragment extends Fragment {
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
                     String number = jObject.getString("number");
-                    JsonData data = new JsonData(name, number, id, id);
+                    String photo = jObject.getString("photo");
+                    JsonData data = new JsonData(id, name, number, photo);
                     serverContact.add(data);
                 }
 
