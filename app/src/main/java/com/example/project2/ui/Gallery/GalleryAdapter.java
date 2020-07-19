@@ -1,6 +1,7 @@
 package com.example.project2.ui.Gallery;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import com.example.project2.R;
 import java.util.ArrayList;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
-    private ArrayList<String> mData;
+    private ArrayList<Bitmap> mData;
 
 
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
@@ -36,7 +37,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     // 생성자에서 데이터 리스트 객체를 전달받음.
-    GalleryAdapter(ArrayList<String> list) {
+    GalleryAdapter(ArrayList<Bitmap> list) {
         mData = list ;
     }
 
@@ -54,8 +55,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     @Override
     public void onBindViewHolder(GalleryAdapter.ViewHolder holder, int position) {
-        String text = mData.get(position) ;
-        holder.name.setText(text) ;
+        Bitmap bitmap = mData.get(position);
+        holder.photo.setImageBitmap(bitmap);
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.

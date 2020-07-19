@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.project2.R;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,6 +53,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
 
 
 public class GalleryFragment extends Fragment {
@@ -127,7 +131,7 @@ public class GalleryFragment extends Fragment {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, options);
-        int resize = 100;
+        int resize = 1000;
         int width = options.outWidth;
         int height = options.outHeight;
         int sampleSize = 1;
@@ -175,7 +179,7 @@ public class GalleryFragment extends Fragment {
     private void multipartImageUpload() {
         try {
             File filesDir = getContext().getFilesDir();
-            File file = new File(filesDir, "image" + ".png");
+            File file = new File(filesDir, "image" + ".png"); //file name = image.png
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -244,27 +248,51 @@ public class GalleryFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+
+        ivImage = root.findViewById(R.id.picked_Image);
+        checkPermissions();
+        initRetrofitClient();
+
+        Button uploadButton = root.findViewById(R.id.upload_Button);
+        Button cameraButton = root.findViewById(R.id.camera_button);
+        Button galleryButton = root.findViewById(R.id.gallery_button);
+        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
+        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
+        ImageView testView = root.findViewById(R.id.testView);
+
+        /*
         ArrayList<String> list = new ArrayList<>();
         for (int i=0; i<100; i++) {
             list.add(String.format("TEXT %d", i));
         }
+        */
 
+        ArrayList<Bitmap> list = new ArrayList<>();
+        Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                list.add(bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                //error message
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+
+        Picasso.with(getContext()).load("http://192.249.19.244:1180/root/webserver/uploads/image.png").into(target);
         RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
         GalleryAdapter adapter = new GalleryAdapter(list);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
 
-        ivImage = root.findViewById(R.id.picked_Image);
-        checkPermissions();
-        initRetrofitClient();
-        Button uploadButton = root.findViewById(R.id.upload_Button);
-        Button cameraButton = root.findViewById(R.id.camera_button);
-        Button galleryButton = root.findViewById(R.id.gallery_button);
-        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
-        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
 
-        galleryButton.setOnClickListener(v -> {
+    galleryButton.setOnClickListener(v -> {
             selectGallery();
             recycler.setVisibility(View.INVISIBLE);
             linearLayout.setVisibility(View.INVISIBLE);
