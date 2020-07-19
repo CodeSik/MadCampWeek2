@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project2.R;
 import com.example.project2.ui.phonebook.JsonData;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 import org.json.JSONArray;
@@ -68,6 +71,11 @@ public class GalleryFragment extends Fragment {
     private final int CAMERA_CODE = 1111;
     private final int GALLERY_CODE=1112;
     private String currentPhotoPath; //실제 사진 파일 경로
+
+    private Animation fab_open, fab_close;
+    private Boolean isFabOpen = false;
+    private FloatingActionButton fab, camera, gallery;
+
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
     GalleryAdapter adapter = new GalleryAdapter(new ArrayList<>(), getContext());
@@ -245,9 +253,27 @@ public class GalleryFragment extends Fragment {
         ivImage.setImageBitmap(finalBitmap);
     }
     ApiService apiService;
+
     private void initRetrofitClient() {
         OkHttpClient client = new OkHttpClient.Builder().build();
         apiService = new Retrofit.Builder().baseUrl("http://192.249.19.244:1180/").client(client).build().create(ApiService.class);
+    }
+
+    public void anim() {
+
+        if (isFabOpen) {
+            camera.startAnimation(fab_close);
+            gallery.startAnimation(fab_close);
+            camera.setClickable(false);
+            gallery.setClickable(false);
+            isFabOpen = false;
+        } else {
+            camera.startAnimation(fab_open);
+            gallery.startAnimation(fab_open);
+            camera.setClickable(true);
+            gallery.setClickable(true);
+            isFabOpen = true;
+        }
     }
 
 
@@ -257,13 +283,19 @@ public class GalleryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
 
         ivImage = root.findViewById(R.id.picked_Image);
+
+
+        fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
+
+        fab = root.findViewById(R.id.fab);
+        camera =  root.findViewById(R.id.camera);
+        gallery =  root.findViewById(R.id.gallery);
+
         checkPermissions();
         initRetrofitClient();
 
         Button uploadButton = root.findViewById(R.id.upload_Button);
-        Button cameraButton = root.findViewById(R.id.camera_button);
-        Button galleryButton = root.findViewById(R.id.gallery_button);
-        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
         RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
 
 
@@ -271,15 +303,16 @@ public class GalleryFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
-
-
-    galleryButton.setOnClickListener(v -> {
-            selectGallery();
+        fab.setOnClickListener(v -> {
+            anim();
+        });
+        camera.setOnClickListener(v -> {
+            anim();
+            selectPhoto();
             recycler.setVisibility(View.INVISIBLE);
-            linearLayout.setVisibility(View.INVISIBLE);
             ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
-
+            fab.setVisibility(View.INVISIBLE);
             uploadButton.setOnClickListener(u -> {
                 if (mBitmap != null) {
                     multipartImageUpload();
@@ -288,33 +321,37 @@ public class GalleryFragment extends Fragment {
                     Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
                 }
                 recycler.setVisibility(View.VISIBLE);
-                linearLayout.setVisibility(View.VISIBLE);
                 ivImage.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.INVISIBLE);
                 ivImage.setImageResource(0);
+                fab.setVisibility(View.VISIBLE);
             });
         });
 
-        cameraButton.setOnClickListener(v -> {
-            selectPhoto();
+        gallery.setOnClickListener(v -> {
+            anim();
+            selectGallery();
             recycler.setVisibility(View.INVISIBLE);
-            linearLayout.setVisibility(View.INVISIBLE);
             ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.INVISIBLE);
             uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null){
+                if (mBitmap != null) {
                     multipartImageUpload();
                 }
                 else {
                     Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
                 }
                 recycler.setVisibility(View.VISIBLE);
-                linearLayout.setVisibility(View.VISIBLE);
                 ivImage.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.INVISIBLE);
                 ivImage.setImageResource(0);
+                fab.setVisibility(View.VISIBLE);
             });
+
         });
+
+
 
 
         return root;
