@@ -322,7 +322,7 @@ public class GalleryFragment extends Fragment {
 
     final int MULTIPLE_PERMISSION_REQUEST = 0;
 
-
+    //a
     private void checkPermissions(){
         /* Set permission */
         ArrayList<String> rejectedPermission = new ArrayList<String>();
