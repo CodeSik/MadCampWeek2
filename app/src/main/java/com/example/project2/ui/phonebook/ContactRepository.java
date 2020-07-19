@@ -83,9 +83,10 @@ public class ContactRepository {
             return contacts;
 
         while (cur != null && cur.moveToNext()) {
+            String id_phone = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
             String id = String.valueOf(Profile.getCurrentProfile().getId());
             String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            String number = fetchPhoneNumber(cr, id);
+            String number = fetchPhoneNumber(cr, id_phone);
             String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
 
 

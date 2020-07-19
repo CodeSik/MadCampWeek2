@@ -31,6 +31,7 @@ public class Dial extends Fragment implements  View.OnClickListener{
     private static final int PERMISSIONS_CALL_PHONE = 2;
     private static final int PERMISSIONS_REQUEST_ALL = 3;
     private static String[] requiredPermissions = new String[]{
+            Manifest.permission.READ_CONTACTS,
             Manifest.permission.SEND_SMS,
             Manifest.permission.CALL_PHONE
     };

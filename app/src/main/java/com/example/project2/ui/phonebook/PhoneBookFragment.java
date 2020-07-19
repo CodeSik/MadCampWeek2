@@ -27,6 +27,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project2.JsonTaskGet;
 import com.example.project2.JsonTaskPost;
@@ -65,6 +66,7 @@ public class PhoneBookFragment extends Fragment {
     private SearchView searchView;
     private ArrayList<JsonData> inAppContact;
     private ArrayList<JsonData> serverContact;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public ArrayList<JsonData> getServerContact() {
         return serverContact;
@@ -73,17 +75,25 @@ public class PhoneBookFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-
         requestRequiredPermissions();
         View root = inflater.inflate(R.layout.fragment_phonebook, container, false);
         adapter = new PhoneBookAdapter(new ArrayList<JsonData>(), getContext());
 
-
+        String id = String.valueOf(Profile.getCurrentProfile().getId());
         String body = "";
         ContactRepository repository = new ContactRepository(this.getContext());
         inAppContact = repository.getContactList();
         serverContact= new ArrayList<>();
-        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook");
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout)root.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook/"+id);
+                adapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         RecyclerView recyclerView = root.findViewById(R.id.pb_recycler_view);
         recyclerView.setAdapter(adapter);
@@ -93,11 +103,9 @@ public class PhoneBookFragment extends Fragment {
 
 
         for (int i = 0; i < inAppContact.size(); i++) {
-            String id = String.valueOf(Profile.getCurrentProfile().getId());
             String name = inAppContact.get(i).getName();
             String number = inAppContact.get(i).getNumber();
             String photo = inAppContact.get(i).getPhoto();
-
 
             body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photo=" + photo;
             new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
@@ -300,6 +308,7 @@ public class PhoneBookFragment extends Fragment {
             super.onPostExecute(result);
             dialog.dismiss();
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            serverContact.clear();
             adapter.getListViewItemList().clear();
             try {
                 JSONArray jarray = new JSONArray(result);
@@ -324,7 +333,7 @@ public class PhoneBookFragment extends Fragment {
                 @Override
                 public void run() {
                     adapter.updateItems(serverContact);
-                    adapter.notifyDataSetChanged();
+                    //adapter.notifyDataSetChanged();
                 }
             });
             Log.d("printget",result);
