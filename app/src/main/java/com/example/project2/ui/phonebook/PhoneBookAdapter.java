@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,9 +24,12 @@ import com.example.project2.R;
 
 import java.util.ArrayList;
 
-public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.PhoneBookViewHolder> {
+public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<JsonData> listViewItemList;
     private Context context;
+    public static final int PROFILE_CONTENT = 0;
+    public static final int UNFOLLOW_CONTENT = 1;
+    public static final int FOLLOW_CONTENT = 2;
 
     public PhoneBookAdapter(ArrayList<JsonData> items, Context context) {
         this.listViewItemList = items;
@@ -35,6 +39,22 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
     public ArrayList<JsonData> getListViewItemList() {
         return listViewItemList;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return PROFILE_CONTENT;
+        else
+            return UNFOLLOW_CONTENT;
+    }
+
+    public class ProfileViewHolder extends RecyclerView.ViewHolder{
+
+        public ProfileViewHolder(@NonNull View ProfileView) {
+            super(ProfileView);
+        }
+    }
+
     public class PhoneBookViewHolder extends RecyclerView.ViewHolder {
         private ImageView photo;
         private TextView name;
@@ -96,22 +116,42 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
     }
 
     @Override
-    public PhoneBookAdapter.PhoneBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_listview, parent, false);
-        return new PhoneBookViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
+        RecyclerView.ViewHolder holder;
+        View view;
+        if (viewType == PROFILE_CONTENT) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_profileview, parent, false);
+            holder = new ProfileViewHolder(view);
+        }
+        else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_listview, parent, false);
+            holder = new PhoneBookViewHolder(view);
+        }
+
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(PhoneBookAdapter.PhoneBookViewHolder holder, final int position) {
-        final JsonData item = listViewItemList.get(position);
-        holder.bind(item);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                item.setExpanded(!item.getExpanded());
-                notifyItemChanged(position);
-            }
-        });
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+        if(holder instanceof PhoneBookViewHolder) {
+            final JsonData item = listViewItemList.get(position);
+            PhoneBookViewHolder phoneBookViewHolder = (PhoneBookViewHolder)holder;
+            phoneBookViewHolder.bind(item);
+            phoneBookViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    item.setExpanded(!item.getExpanded());
+                    notifyItemChanged(position);
+                }
+            });
+        }
+        else if(holder instanceof ProfileViewHolder)
+        {
+            //TODO: 프로필에 바인드 함수 구현 &
+            ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
+        }
     }
 
     @Override
