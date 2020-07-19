@@ -61,16 +61,13 @@ public class PhoneBookFragment extends Fragment {
     private PhoneBookAdapter adapter;
     private LinearLayoutManager layoutManager;
 
-    private ListView listview;
-    private ArrayAdapter searchAdapter;
+
     private SearchView searchView;
     private ArrayList<JsonData> inAppContact;
     private ArrayList<JsonData> serverContact;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ProfileData profileInfo;
 
-    public ArrayList<JsonData> getServerContact() {
-        return serverContact;
-    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -84,7 +81,9 @@ public class PhoneBookFragment extends Fragment {
         ContactRepository repository = new ContactRepository(this.getContext());
         inAppContact = repository.getContactList();
         serverContact= new ArrayList<>();
-
+        profileInfo = new ProfileData();
+        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
+        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook/"+id);
         mSwipeRefreshLayout = (SwipeRefreshLayout)root.findViewById(R.id.refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -131,6 +130,7 @@ public class PhoneBookFragment extends Fragment {
     private void initializeContacts() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             adapter.updateItems(serverContact);//serverContact로 바꿔야함.
+            adapter.updateProfile(profileInfo);
             adapter.notifyDataSetChanged();
         }
     }
@@ -286,7 +286,8 @@ public class PhoneBookFragment extends Fragment {
             adapter.getListViewItemList().clear();
             try {
                 JSONArray jarray = new JSONArray(result);
-                //  ArrayList<JsonData> datalist = new ArrayList<>();
+                JsonData initialdata = new JsonData("id","name","number","photo");
+                serverContact.add(initialdata);
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
@@ -315,5 +316,108 @@ public class PhoneBookFragment extends Fragment {
 
     }
 
+
+    public class JsonTaskGetProfile extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+
+
+            dialog = new ProgressDialog(getContext());
+
+            //dialog.setCancelable(false);
+
+            dialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try {
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONArray jarray = new JSONArray(result);
+
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String name = jObject.getString("name");
+                    String state = jObject.getString("state");
+                    String photo = jObject.getString("photo");
+                    profileInfo = new ProfileData(id, name, state, photo);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.updateProfile(profileInfo);
+                    //adapter.notifyDataSetChanged();
+                }
+            });
+            Log.d("printget",result);
+        }
+
+    }
 
 }

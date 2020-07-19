@@ -26,13 +26,15 @@ import java.util.ArrayList;
 
 public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<JsonData> listViewItemList;
+    private ProfileData profileData;
     private Context context;
     public static final int PROFILE_CONTENT = 0;
     public static final int UNFOLLOW_CONTENT = 1;
     public static final int FOLLOW_CONTENT = 2;
 
-    public PhoneBookAdapter(ArrayList<JsonData> items, Context context) {
+    public PhoneBookAdapter(ArrayList<JsonData> items,Context context) {
         this.listViewItemList = items;
+        this.profileData = new ProfileData();
         this.context = context;
     }
 
@@ -49,9 +51,43 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class ProfileViewHolder extends RecyclerView.ViewHolder{
+        private ImageView photo;
+        private TextView name;
+        private TextView state;
+        private ImageButton change_photo;
+        private ImageButton change_state;
+        private Button followButton;
+        private View expandableList;
+
 
         public ProfileViewHolder(@NonNull View ProfileView) {
             super(ProfileView);
+            name = ProfileView.findViewById(R.id.name_profile);
+            photo = ProfileView.findViewById(R.id.photo_profile);
+            state = ProfileView.findViewById(R.id.state_profile);
+            expandableList = ProfileView.findViewById(R.id.expandable_list_profile);
+        }
+
+        public void bind(ProfileData profileData) {
+            boolean expanded = profileData.getExpanded();
+
+            expandableList.setVisibility(expanded ? View.VISIBLE : View.GONE);
+            name.setText(profileData.getName());
+            state.setText(profileData.getState());
+            Glide.with(context).load(profileData.getPhoto()).into(photo);
+            /*
+            change_photo.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+
+                }
+            });
+
+            change_state.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+
+                }
+            });
+*/
         }
     }
 
@@ -151,6 +187,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         {
             //TODO: 프로필에 바인드 함수 구현 &
             ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
+            profileViewHolder.bind(profileData);
         }
     }
 
@@ -163,6 +200,11 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         listViewItemList.clear();
         if (items != null)
             listViewItemList.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    public void updateProfile(ProfileData item) {
+        profileData = item;
         notifyDataSetChanged();
     }
 
