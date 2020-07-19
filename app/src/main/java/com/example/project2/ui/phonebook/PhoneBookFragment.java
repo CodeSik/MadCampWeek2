@@ -238,7 +238,6 @@ public class PhoneBookFragment extends Fragment {
                     //연결을 함
                     con = (HttpURLConnection) url.openConnection();
 
-
                     con.connect();
 
                     InputStream stream = con.getInputStream();
@@ -256,52 +255,27 @@ public class PhoneBookFragment extends Fragment {
                     return buffer.toString();
                     //아래는 예외처리 부분이다.
 
-
-
-
                 } catch (MalformedURLException e){
-
                     e.printStackTrace();
-
                 } catch (IOException e) {
-
                     e.printStackTrace();
-
                 } finally {
-
                     if(con != null){
-
                         con.disconnect();
-
                     }
-
                     try {
-
                         if(reader != null){
-
                             reader.close();//버퍼를 닫아줌
-
                         }
-
                     } catch (IOException e) {
-
                         e.printStackTrace();
-
                     }
-
                 }
-
             } catch (Exception e) {
-
                 e.printStackTrace();
-
             }
-
             return null;
-
         }
-
-
 
         @Override
         protected void onPostExecute(String result) {
