@@ -62,6 +62,14 @@
                     android:layout_marginTop="4dp"
                     android:text="number" />
 
+                <TextView
+                    android:id="@+id/statusMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="2"
+                    android:text="statusMessage" />
+
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
