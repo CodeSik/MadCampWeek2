@@ -20,8 +20,8 @@
         android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
             android:layout_marginRight="10dp"
             android:backgroundTint="@android:color/transparent"
@@ -44,35 +44,34 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <View
+                    android:id="@+id/view2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="name" />
+                    android:elegantTextHeight="false"
+                    android:text="name"
+                    android:textAllCaps="false"
+                    android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/number"
+                <View
+                    android:id="@+id/view3"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="4dp"
-                    android:text="number" />
-
-                <TextView
-                    android:id="@+id/email"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="4dp"
-                    android:text="email" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/photo"
+        android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/cloud"
@@ -113,6 +112,15 @@
             android:layout_weight="1" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:text="구름위에서 구름"
+        android:textSize="16sp" />
 
     <View
         android:id="@+id/view"
