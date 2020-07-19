@@ -31,6 +31,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
         this.listViewItemList = items;
         this.context = context;
     }
+
     public ArrayList<JsonData> getListViewItemList() {
         return listViewItemList;
     }

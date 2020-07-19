@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +29,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.example.project2.R;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.example.project2.ui.phonebook.JsonData;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -63,6 +70,8 @@ public class GalleryFragment extends Fragment {
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
+    GalleryAdapter adapter = new GalleryAdapter(new ArrayList<>(), getContext());
+    private ArrayList<GalleryData> serverFeeds;
 
     private void selectPhoto() {
         String state = Environment.getExternalStorageState();
@@ -256,35 +265,9 @@ public class GalleryFragment extends Fragment {
         Button galleryButton = root.findViewById(R.id.gallery_button);
         LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
         RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
-        ImageView testView = root.findViewById(R.id.testView);
 
-        /*
-        ArrayList<String> list = new ArrayList<>();
-        for (int i=0; i<100; i++) {
-            list.add(String.format("TEXT %d", i));
-        }
-        */
 
-        ArrayList<Bitmap> list = new ArrayList<>();
-        Target target = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                list.add(bitmap);
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                //error message
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-
-        Picasso.with(getContext()).load("http://192.249.19.244:1180/root/webserver/uploads/image.png").into(target);
         RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
-        GalleryAdapter adapter = new GalleryAdapter(list);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
@@ -396,5 +379,42 @@ public class GalleryFragment extends Fragment {
         }
     }
 }
+
+//    @Override
+//    protected void onPostExecute(String result) {
+//        super.onPostExecute(result);
+//        adapter.getListViewItemList().clear();
+//        try {
+//            JSONArray jarray = new JSONArray(result);
+//            //  ArrayList<JsonData> datalist = new ArrayList<>();
+//            for (int i = 0; i < jarray.length(); i++) {
+//                JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+//                String id = jObject.getString("id");
+//                String photoid = jObject.getString("photoid");
+//                String image = jObject.getString("image");
+//                String contents = jObject.getString("contents");
+//                int like = jObject.getInt("like");
+//                GalleryData data = new GalleryData(id, photoid, image, contents, like);
+//                serverFeeds.add(data);
+//            }
+//
+//
+//        }catch (JSONException e) {
+//
+//            e.printStackTrace();
+//
+//        }
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                adapter.updateItems(serverFeeds);
+//                adapter.notifyDataSetChanged();
+//            }
+//        });
+//        Log.d("printget",result);
+//    }
+
+
+
 
 }
