@@ -81,7 +81,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         listViewItemList.clear();
         if (items != null)
             listViewItemList.addAll(items);
-        //notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 }
 

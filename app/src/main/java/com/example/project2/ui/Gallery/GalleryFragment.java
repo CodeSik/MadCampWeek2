@@ -1,6 +1,7 @@
 package com.example.project2.ui.Gallery;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,11 +22,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -34,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project2.R;
 import com.example.project2.ui.phonebook.JsonData;
+import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -41,11 +46,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -294,14 +305,15 @@ public class GalleryFragment extends Fragment {
 
         checkPermissions();
         initRetrofitClient();
+        initializeFeeds();
+        new GalleryFragment.JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/");
+        adapter.notifyDataSetChanged();
+
 
         Button uploadButton = root.findViewById(R.id.upload_Button);
         RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
-
-
-        RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
+        recycler.setAdapter(adapter);
+        recycler.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
         fab.setOnClickListener(v -> {
             anim();
@@ -386,10 +398,19 @@ public class GalleryFragment extends Fragment {
         }
     }
 
+
+    private void initializeFeeds() {
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            adapter.updateItems(serverFeeds);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MULTIPLE_PERMISSION_REQUEST) {
             if (grantResults.length == 0) {
+                initializeFeeds();
                 return;
             }
             for (int i = 0; i < permissions.length; ++i) {
@@ -417,39 +438,112 @@ public class GalleryFragment extends Fragment {
     }
 }
 
-//    @Override
-//    protected void onPostExecute(String result) {
-//        super.onPostExecute(result);
-//        adapter.getListViewItemList().clear();
-//        try {
-//            JSONArray jarray = new JSONArray(result);
-//            //  ArrayList<JsonData> datalist = new ArrayList<>();
-//            for (int i = 0; i < jarray.length(); i++) {
-//                JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-//                String id = jObject.getString("id");
-//                String photoid = jObject.getString("photoid");
-//                String image = jObject.getString("image");
-//                String contents = jObject.getString("contents");
-//                int like = jObject.getInt("like");
-//                GalleryData data = new GalleryData(id, photoid, image, contents, like);
-//                serverFeeds.add(data);
-//            }
-//
-//
-//        }catch (JSONException e) {
-//
-//            e.printStackTrace();
-//
-//        }
-//        getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                adapter.updateItems(serverFeeds);
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-//        Log.d("printget",result);
-//    }
+
+    public class JsonTaskGetPhone extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+
+
+            dialog = new ProgressDialog(getContext());
+
+            //dialog.setCancelable(false);
+
+            dialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try{
+                    URL url = new URL(urls[0]);//이러면 되냐?
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while((line = reader.readLine()) != null){
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e){
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if(con != null){
+                        con.disconnect();
+                    }
+                    try {
+                        if(reader != null){
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            serverFeeds.clear();
+            adapter.getListViewItemList().clear();
+            try {
+                JSONArray jarray = new JSONArray(result);
+                //  ArrayList<JsonData> datalist = new ArrayList<>();
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String photoid = jObject.getString("photoid");
+                    String image = jObject.getString("image");
+                    String contents = jObject.getString("contents");
+                    int like = jObject.getInt("like");
+                    GalleryData data = new GalleryData(id, photoid, image, contents, like);
+                    serverFeeds.add(data);
+                }
+
+
+            }catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.updateItems(serverFeeds);
+                    //adapter.notifyDataSetChanged();
+                }
+            });
+            Log.d("printget",result);
+        }
+
+    }
 
 
 

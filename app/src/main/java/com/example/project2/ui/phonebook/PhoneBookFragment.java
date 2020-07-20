@@ -299,9 +299,7 @@ public class PhoneBookFragment extends Fragment {
 
 
             }catch (JSONException e) {
-
                 e.printStackTrace();
-
             }
             getActivity().runOnUiThread(new Runnable() {
                 @Override
