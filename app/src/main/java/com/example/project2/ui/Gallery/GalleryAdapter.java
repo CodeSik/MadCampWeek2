@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
-import com.example.project2.ui.phonebook.JsonData;
+import com.example.project2.ui.phonebook.;
 
 
 import java.util.ArrayList;

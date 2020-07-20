@@ -15,26 +15,80 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project2.MainActivity;
 import com.example.project2.R;
 
 import java.util.ArrayList;
 
-public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.PhoneBookViewHolder> {
-    private ArrayList<JsonData> listViewItemList;
-    private Context context;
+import static androidx.core.app.ActivityCompat.startActivityForResult;
 
-    public PhoneBookAdapter(ArrayList<JsonData> items, Context context) {
+
+public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private ArrayList<JsonData> listViewItemList;
+    private ProfileData profileData;
+    private Context context;
+    public static final int PROFILE_CONTENT = 0;
+    public static final int UNFOLLOW_CONTENT = 1;
+    public static final int FOLLOW_CONTENT = 2;
+
+
+    public PhoneBookAdapter(ArrayList<JsonData> items,Context context) {
         this.listViewItemList = items;
+        this.profileData = new ProfileData();
         this.context = context;
     }
 
     public ArrayList<JsonData> getListViewItemList() {
         return listViewItemList;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return PROFILE_CONTENT;
+        else
+            return UNFOLLOW_CONTENT;
+    }
+
+
+    public class ProfileViewHolder extends RecyclerView.ViewHolder{
+        private ImageView photo;
+        private TextView name;
+        private TextView state;
+
+        private Button followButton;
+
+
+
+        public ProfileViewHolder(@NonNull View ProfileView) {
+            super(ProfileView);
+            name = ProfileView.findViewById(R.id.name_profile);
+            photo = ProfileView.findViewById(R.id.photo_profile);
+            state = ProfileView.findViewById(R.id.state_profile);
+
+
+        }
+
+        public void bind(ProfileData profileData) {
+            boolean expanded = profileData.getExpanded();
+
+
+            name.setText(profileData.getName());
+            state.setText(profileData.getState());
+            Glide.with(context).load(profileData.getPhoto()).into(photo);
+
+
+
+        }
+    }
+
+
     public class PhoneBookViewHolder extends RecyclerView.ViewHolder {
         private ImageView photo;
         private TextView name;
@@ -96,22 +150,49 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
     }
 
     @Override
-    public PhoneBookAdapter.PhoneBookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_listview, parent, false);
-        return new PhoneBookViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
+        RecyclerView.ViewHolder holder;
+        View view;
+        if (viewType == PROFILE_CONTENT) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_profileview, parent, false);
+            holder = new ProfileViewHolder(view);
+        }
+        else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_phonebook_listview, parent, false);
+            holder = new PhoneBookViewHolder(view);
+        }
+
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(PhoneBookAdapter.PhoneBookViewHolder holder, final int position) {
-        final JsonData item = listViewItemList.get(position);
-        holder.bind(item);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                item.setExpanded(!item.getExpanded());
-                notifyItemChanged(position);
-            }
-        });
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+        if(holder instanceof PhoneBookViewHolder) {
+            final JsonData item = listViewItemList.get(position);
+            PhoneBookViewHolder phoneBookViewHolder = (PhoneBookViewHolder)holder;
+            phoneBookViewHolder.bind(item);
+            phoneBookViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    item.setExpanded(!item.getExpanded());
+                    notifyItemChanged(position);
+                }
+            });
+        }
+        else if(holder instanceof ProfileViewHolder)
+        {
+            ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
+            profileViewHolder.bind(profileData);
+            profileViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(),ProfileActivity.class);
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -126,11 +207,16 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<PhoneBookAdapter.Phon
         notifyDataSetChanged();
     }
 
+    public void updateProfile(ProfileData item) {
+        profileData = item;
+        notifyDataSetChanged();
+    }
+
 
     public void fillter(String searchText, ArrayList<JsonData> backupList){
 
         listViewItemList.clear();
-
+        listViewItemList.add(backupList.get(0));
         for( JsonData item : backupList)
         {
             if(item.getName().toUpperCase().contains(searchText.toUpperCase()))

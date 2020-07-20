@@ -1,10 +1,16 @@
 package com.example.project2;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -15,12 +21,13 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
 import java.util.Arrays;
 
 public class LoadingActivity extends Activity {
     private CallbackManager callbackManager;
     private final long FINISH_INTERVAL_TIME = 2000;
-    private long   backPressedTime = 0;
+    private long backPressedTime = 0;
 
 
     @Override
@@ -36,8 +43,8 @@ public class LoadingActivity extends Activity {
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if (isLoggedIn){
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile","email"));
+        if (isLoggedIn) {
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
         }
 
 // Callback registration
@@ -45,10 +52,12 @@ public class LoadingActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
+
                 String id = String.valueOf(Profile.getCurrentProfile().getId());
                 String name= String.valueOf(Profile.getCurrentProfile().getName());
-
-                String body = "id=" + id + '&' + "name=" + name;
+                String state = " ";
+                String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
+                String body = "id=" + id + '&' + "name=" + name+ '&' +"state="+state+ '&' +"photo="+photo;
                 new JsonTaskPost().execute("http://192.249.19.244:1180/users", body);
                 Toast.makeText(getApplicationContext(), String.valueOf(Profile.getCurrentProfile().getName()) , Toast.LENGTH_LONG).show();
             }

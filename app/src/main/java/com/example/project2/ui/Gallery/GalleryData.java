@@ -18,20 +18,17 @@ public class GalleryData {
         this.image = image;
         this.contents = contents;
         this.like = like;
-        this.name = ???;
-        this.profile = ???;
     }
 
     public String getImage() { return image; }
-
-    public String getProfile() { return profile; }
 
     public String getContents() { return contents; }
 
     public int getLike() { return like; }
 
-    public String getName() { return name;}
-
+//    public String getName() { return name;}
+//
+//    public String getProfile() { return profile; }
 
 //
 //    public void setName(String name) {
