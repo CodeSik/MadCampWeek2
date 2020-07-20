@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
 import com.example.project2.ui.phonebook.ProfileData;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
@@ -35,9 +36,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView profile;
         private TextView name;
-        private TextView content;
         private ImageView image;
         private Button likeList;
+
 
         public ViewHolder(View itemView) {
             super(itemView) ;
@@ -46,7 +47,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             name = itemView.findViewById(R.id.name);
             image = itemView.findViewById(R.id.image);
             likeList = itemView.findViewById(R.id.like_list_Button);
-            content = itemView.findViewById(R.id.content);
         }
     }
 
@@ -69,7 +69,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         Glide.with(context).load(item.getImage()).into(holder.image);
         Glide.with(context).load(profileItem.getPhoto()).into(holder.profile);
         holder.name.setText(profileItem.getName());
-        holder.content.setText(item.getContents());
         holder.likeList.setText("좋아요" + item.getLike() + "개");
     }
 

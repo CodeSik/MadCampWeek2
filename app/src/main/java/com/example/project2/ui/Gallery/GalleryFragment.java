@@ -22,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.example.project2.ui.phonebook.ProfileData;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,7 +90,9 @@ public class GalleryFragment extends Fragment {
 
     private ArrayList<GalleryData> serverFeeds ;
     private ProfileData profileInfo;
-
+    private TextInputLayout contents_box;
+    private TextView testView;
+    private TextView content;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -109,6 +113,9 @@ public class GalleryFragment extends Fragment {
         fab = root.findViewById(R.id.fab);
         camera =  root.findViewById(R.id.camera);
         gallery =  root.findViewById(R.id.gallery);
+        content = root.findViewById(R.id.content);
+        contents_box = root.findViewById(R.id.contents_box);
+        testView = root.findViewById(R.id.testContents);
 
         checkPermissions();
         initRetrofitClient();
@@ -144,9 +151,13 @@ public class GalleryFragment extends Fragment {
             ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
             fab.setVisibility(View.INVISIBLE);
+            contents_box.setVisibility(View.VISIBLE);
+            testView.setVisibility(View.VISIBLE);
+
             uploadButton.setOnClickListener(u -> {
                 if (mBitmap != null) {
                     multipartImageUpload();
+                    //상태메세지도 올리기
                 }
                 else {
                     Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
@@ -156,6 +167,9 @@ public class GalleryFragment extends Fragment {
                 uploadButton.setVisibility(View.INVISIBLE);
                 ivImage.setImageResource(0);
                 fab.setVisibility(View.VISIBLE);
+                contents_box.setVisibility(View.INVISIBLE);
+                testView.setVisibility(View.INVISIBLE);
+
             });
         });
 
@@ -166,9 +180,13 @@ public class GalleryFragment extends Fragment {
             ivImage.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.VISIBLE);
             fab.setVisibility(View.INVISIBLE);
+            contents_box.setVisibility(View.VISIBLE);
+            testView.setVisibility(View.VISIBLE);
+
             uploadButton.setOnClickListener(u -> {
                 if (mBitmap != null) {
                     multipartImageUpload();
+                    //상태메세지 올리기
                 }
                 else {
                     Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
@@ -178,6 +196,8 @@ public class GalleryFragment extends Fragment {
                 uploadButton.setVisibility(View.INVISIBLE);
                 ivImage.setImageResource(0);
                 fab.setVisibility(View.VISIBLE);
+                contents_box.setVisibility(View.INVISIBLE);
+                testView.setVisibility(View.INVISIBLE);
             });
 
         });

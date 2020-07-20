@@ -1,15 +1,10 @@
 package com.example.project2;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
 import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -26,9 +21,6 @@ import java.util.Arrays;
 
 public class LoadingActivity extends Activity {
     private CallbackManager callbackManager;
-    private final long FINISH_INTERVAL_TIME = 2000;
-    private long backPressedTime = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
