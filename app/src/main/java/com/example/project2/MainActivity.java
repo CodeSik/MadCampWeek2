@@ -1,14 +1,18 @@
 package com.example.project2;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.example.project2.ui.Dial.Dial;
 import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.facebook.Profile;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -16,11 +20,14 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Intent intent = new Intent(this, LoadingActivity.class);
         startActivity(intent);
+
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -34,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     }
+
+
 
 }

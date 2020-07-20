@@ -1,6 +1,7 @@
 package com.example.project2.ui.phonebook;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -9,8 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -19,16 +22,28 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.project2.JsonTaskPost;
+import com.example.project2.JsonTaskPut;
 import com.example.project2.R;
 import com.example.project2.ui.Gallery.ApiService;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -49,7 +64,7 @@ public class GalleryActivity extends AppCompatActivity {
     ApiService apiService;
     Bitmap mBitmap;
     final int MULTIPLE_PERMISSION_REQUEST = 0;
-
+    private ProfileData profileData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +89,111 @@ public class GalleryActivity extends AppCompatActivity {
             }
         });
         ivImage.setImageResource(0); //View Reset
-
+        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
+        updateProfilePhoto();
     }
 
+    private void updateProfilePhoto(){
+        String id = String.valueOf(Profile.getCurrentProfile().getId());
+        String name= String.valueOf(Profile.getCurrentProfile().getName());
+        String follow = profileData.getFollow();
+        String state = profileData.getState();
+        String photo = "http://192.249.19.244:1180/uploads/image"+id+".png";
+        String body = "id=" + id + '&' + "name=" + name+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
+        new JsonTaskPut().execute("http://192.249.19.244:1180/users/"+id, body);
+    }
+
+    public class JsonTaskGetProfile extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(getApplicationContext());
+            //dialog.setCancelable(false);
+            dialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try {
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONArray jarray = new JSONArray(result);
+
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String name = jObject.getString("name");
+                    String follow = jObject.getString("follow");
+                    String state = jObject.getString("state");
+                    String photo = jObject.getString("photo");
+                    profileData = new ProfileData(id, name, follow, state, photo);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            Log.d("printget",result);
+        }
+
+    }
     private void checkPermissions(){
         /* Set permission */
         ArrayList<String> rejectedPermission = new ArrayList<String>();
