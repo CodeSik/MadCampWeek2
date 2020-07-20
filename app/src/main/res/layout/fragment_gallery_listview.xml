@@ -103,8 +103,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background = "#00FF0000"
-            android:text="누가 좋아요를 눌렀을까요~?" />
+            android:background="#00FF0000"
+            android:text="누가 좋아요를 눌렀을까요~?"
+            android:textAlignment="textStart" />
 
         <Space
             android:layout_width="0dp"

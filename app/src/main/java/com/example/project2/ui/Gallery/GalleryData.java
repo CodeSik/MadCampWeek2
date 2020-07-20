@@ -10,7 +10,7 @@ public class GalleryData {
 
 
 
-    public GalleryData(String id, String photoid, String photo, String contents, int like) {
+    public GalleryData(String id, String photoid, String image, String contents, int like) {
         this.id = id;
         this.photoid = photoid;
         this.image = image;

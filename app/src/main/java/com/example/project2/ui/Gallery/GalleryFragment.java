@@ -34,6 +34,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
 import com.example.project2.R;
@@ -87,10 +88,99 @@ public class GalleryFragment extends Fragment {
     private Boolean isFabOpen = false;
     private FloatingActionButton fab, camera, gallery;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
-    GalleryAdapter adapter = new GalleryAdapter(new ArrayList<>(), getContext());
-    private ArrayList<GalleryData> serverFeeds;
+    GalleryAdapter adapter;
+    private ArrayList<GalleryData> serverFeeds ;
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        adapter= new GalleryAdapter(new ArrayList<>(), getContext());
+        ivImage = root.findViewById(R.id.picked_Image);
+        serverFeeds = new ArrayList<>();
+
+        fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
+
+        fab = root.findViewById(R.id.fab);
+        camera =  root.findViewById(R.id.camera);
+        gallery =  root.findViewById(R.id.gallery);
+
+        checkPermissions();
+        initRetrofitClient();
+
+        SwipeRefreshLayout mSwipeRefreshLayout = root.findViewById(R.id.swipe_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/");
+            adapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
+
+
+
+        adapter.notifyDataSetChanged();
+        initializeFeeds();
+
+        Button uploadButton = root.findViewById(R.id.upload_Button);
+        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
+        recycler.setAdapter(adapter);
+        recycler.setLayoutManager(new LinearLayoutManager(getContext())) ;
+
+        fab.setOnClickListener(v -> {
+            anim();
+        });
+        camera.setOnClickListener(v -> {
+            anim();
+            selectPhoto();
+            recycler.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
+            uploadButton.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.INVISIBLE);
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null) {
+                    multipartImageUpload();
+                }
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+                recycler.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+                ivImage.setImageResource(0);
+                fab.setVisibility(View.VISIBLE);
+            });
+        });
+
+        gallery.setOnClickListener(v -> {
+            anim();
+            selectGallery();
+            recycler.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
+            uploadButton.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.INVISIBLE);
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null) {
+                    multipartImageUpload();
+                }
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+                recycler.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+                ivImage.setImageResource(0);
+                fab.setVisibility(View.VISIBLE);
+            });
+
+        });
+
+
+        return root;
+    }
 
     private void selectPhoto() {
         String state = Environment.getExternalStorageState();
@@ -263,6 +353,7 @@ public class GalleryFragment extends Fragment {
         mBitmap = finalBitmap;
         ivImage.setImageBitmap(finalBitmap);
     }
+
     ApiService apiService;
 
     private void initRetrofitClient() {
@@ -288,86 +379,7 @@ public class GalleryFragment extends Fragment {
     }
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-
-        ivImage = root.findViewById(R.id.picked_Image);
-
-
-        fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
-        fab_close = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
-
-        fab = root.findViewById(R.id.fab);
-        camera =  root.findViewById(R.id.camera);
-        gallery =  root.findViewById(R.id.gallery);
-
-        checkPermissions();
-        initRetrofitClient();
-        initializeFeeds();
-        new GalleryFragment.JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/");
-        adapter.notifyDataSetChanged();
-
-
-        Button uploadButton = root.findViewById(R.id.upload_Button);
-        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
-        recycler.setAdapter(adapter);
-        recycler.setLayoutManager(new LinearLayoutManager(getContext())) ;
-
-        fab.setOnClickListener(v -> {
-            anim();
-        });
-        camera.setOnClickListener(v -> {
-            anim();
-            selectPhoto();
-            recycler.setVisibility(View.INVISIBLE);
-            ivImage.setVisibility(View.VISIBLE);
-            uploadButton.setVisibility(View.VISIBLE);
-            fab.setVisibility(View.INVISIBLE);
-            uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null) {
-                    multipartImageUpload();
-                }
-                else {
-                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
-                }
-                recycler.setVisibility(View.VISIBLE);
-                ivImage.setVisibility(View.INVISIBLE);
-                uploadButton.setVisibility(View.INVISIBLE);
-                ivImage.setImageResource(0);
-                fab.setVisibility(View.VISIBLE);
-            });
-        });
-
-        gallery.setOnClickListener(v -> {
-            anim();
-            selectGallery();
-            recycler.setVisibility(View.INVISIBLE);
-            ivImage.setVisibility(View.VISIBLE);
-            uploadButton.setVisibility(View.VISIBLE);
-            fab.setVisibility(View.INVISIBLE);
-            uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null) {
-                    multipartImageUpload();
-                }
-                else {
-                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
-                }
-                recycler.setVisibility(View.VISIBLE);
-                ivImage.setVisibility(View.INVISIBLE);
-                uploadButton.setVisibility(View.INVISIBLE);
-                ivImage.setImageResource(0);
-                fab.setVisibility(View.VISIBLE);
-            });
-
-        });
-
-
-
-
-        return root;
-    }
 
     final int MULTIPLE_PERMISSION_REQUEST = 0;
 
@@ -400,7 +412,7 @@ public class GalleryFragment extends Fragment {
 
 
     private void initializeFeeds() {
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             adapter.updateItems(serverFeeds);
             adapter.notifyDataSetChanged();
         }
@@ -511,8 +523,11 @@ public class GalleryFragment extends Fragment {
             super.onPostExecute(result);
             dialog.dismiss();
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-            serverFeeds.clear();
-            adapter.getListViewItemList().clear();
+            if (serverFeeds != null)
+                serverFeeds.clear();
+            if (adapter.getListViewItemList() != null)
+                adapter.getListViewItemList().clear();
+
             try {
                 JSONArray jarray = new JSONArray(result);
                 //  ArrayList<JsonData> datalist = new ArrayList<>();

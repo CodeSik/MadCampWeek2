@@ -6,69 +6,80 @@
     android:layout_height="match_parent"
     android:layout_weight="0.5">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/gallery_recycler_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="#ededed"
-        android:dividerHeight="1dp" />
-
-
-    <ImageView
-        android:id="@+id/picked_Image"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/upload_Button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:text="↑"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/gallery_recycler_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/gallery_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#ededed"
+            android:dividerHeight="1dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15sp"
-        android:backgroundTint="@color/colorPrimary"
-        android:clickable="true"
-        android:contextClickable="false"
-        android:src="@drawable/plus"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15sp"
-        android:backgroundTint="@color/colorPrimary"
-        android:clickable="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/fab"
-        app:layout_constraintEnd_toEndOf="@+id/gallery_recycler_view"
-        app:srcCompat="@drawable/gallery" />
+        <ImageView
+            android:id="@+id/picked_Image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15sp"
-        android:backgroundTint="@color/colorPrimary"
-        android:clickable="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/gallery"
-        app:layout_constraintEnd_toEndOf="@+id/gallery_recycler_view"
-        app:srcCompat="@drawable/camera" />
+        <Button
+            android:id="@+id/upload_Button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="↑"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/gallery_recycler_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15sp"
+            android:backgroundTint="@color/colorPrimary"
+            android:clickable="true"
+            android:contextClickable="false"
+            android:focusable="true"
+            android:src="@drawable/plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15sp"
+            android:backgroundTint="@color/colorPrimary"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/fab"
+            app:layout_constraintEnd_toEndOf="@+id/gallery_recycler_view"
+            app:srcCompat="@drawable/gallery" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15sp"
+            android:backgroundTint="@color/colorPrimary"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/gallery"
+            app:layout_constraintEnd_toEndOf="@+id/gallery_recycler_view"
+            app:srcCompat="@drawable/camera" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
