@@ -129,7 +129,7 @@ public class GalleryFragment extends Fragment {
         adapter.notifyDataSetChanged();
         initializeFeeds();
 
-        Button uploadButton = root.findViewById(R.id.upload_Button);
+        FloatingActionButton uploadButton = root.findViewById(R.id.upload_Button);
         RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(getContext())) ;
@@ -299,7 +299,7 @@ public class GalleryFragment extends Fragment {
     private void multipartImageUpload() {
         try {
             File filesDir = getContext().getFilesDir();
-            File file = new File(filesDir, "image" + ".png"); //file name = image.png
+            File file = new File(filesDir, "image" + ".png"); //file name = image.png Todo change filename by feeds
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -635,9 +635,10 @@ public class GalleryFragment extends Fragment {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
+                    String follow = jObject.getString("follow");
                     String state = jObject.getString("state");
                     String photo = jObject.getString("photo");
-                    profileInfo = new ProfileData(id, name, state, photo);
+                    profileInfo = new ProfileData(id, name, follow, state, photo);
                 }
 
             } catch (JSONException e) {

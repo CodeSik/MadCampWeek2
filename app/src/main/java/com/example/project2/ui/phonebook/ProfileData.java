@@ -4,13 +4,15 @@ public class ProfileData {
 
     private String id;
     private String name;
+    private String follow;
     private String state;
     private String photo;
     private boolean expanded;
 
-    public ProfileData(String id, String name, String state, String photo) {
+    public ProfileData(String id, String name, String follow, String state, String photo) {
         this.id = id;
         this.name = name;
+        this.follow = follow;
         this.state = state;
         this.photo = photo;
     }
@@ -41,6 +43,8 @@ public class ProfileData {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getFollow() { return follow; }
 
     public String getState() {
         return state;

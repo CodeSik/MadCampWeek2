@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,8 +62,8 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private ImageView photo;
         private TextView name;
         private TextView state;
-
-        private Button followButton;
+        private Button cameraButton;
+        private Button galleryButton;
 
 
 
@@ -71,8 +72,8 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             name = ProfileView.findViewById(R.id.name_profile);
             photo = ProfileView.findViewById(R.id.photo_profile);
             state = ProfileView.findViewById(R.id.state_profile);
-
-
+            cameraButton = itemView.findViewById(R.id.CAMERAbutton);
+            galleryButton = itemView.findViewById(R.id.GALLERYbutton);
         }
 
         public void bind(ProfileData profileData) {
@@ -181,19 +182,29 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             });
         }
+
         else if(holder instanceof ProfileViewHolder)
         {
             ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
             profileViewHolder.bind(profileData);
-            profileViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(),ProfileActivity.class);
-                    context.startActivity(intent);
-                }
+            profileViewHolder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(),ProfileActivity.class);
+                context.startActivity(intent);
             });
-        }
+
+            profileViewHolder.cameraButton.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), CameraActivity.class);
+                context.startActivity(intent);
+            });
+
+            profileViewHolder.galleryButton.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), GalleryActivity.class);
+                context.startActivity(intent);
+            });
+
     }
+        }
+
 
     @Override
     public int getItemCount() {

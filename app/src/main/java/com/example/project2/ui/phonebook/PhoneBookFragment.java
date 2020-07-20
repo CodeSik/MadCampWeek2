@@ -167,10 +167,6 @@ public class PhoneBookFragment extends Fragment {
     }
 
 
-
-
-
-
     private void requestRequiredPermissions() {
         boolean allGranted = true;
         for (String permission : PhoneBookFragment.requiredPermissions) {
@@ -432,9 +428,10 @@ public class PhoneBookFragment extends Fragment {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
+                    String follow = jObject.getString("follow");
                     String state = jObject.getString("state");
                     String photo = jObject.getString("photo");
-                    profileInfo = new ProfileData(id, name, state, photo);
+                    profileInfo = new ProfileData(id, name, follow, state, photo);
                 }
 
             } catch (JSONException e) {
