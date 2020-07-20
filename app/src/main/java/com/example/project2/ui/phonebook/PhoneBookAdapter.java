@@ -16,13 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project2.MainActivity;
 import com.example.project2.R;
 
 import java.util.ArrayList;
+
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
 
 public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<JsonData> listViewItemList;
@@ -31,6 +36,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static final int PROFILE_CONTENT = 0;
     public static final int UNFOLLOW_CONTENT = 1;
     public static final int FOLLOW_CONTENT = 2;
+
 
     public PhoneBookAdapter(ArrayList<JsonData> items,Context context) {
         this.listViewItemList = items;
@@ -50,14 +56,14 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return UNFOLLOW_CONTENT;
     }
 
+
     public class ProfileViewHolder extends RecyclerView.ViewHolder{
         private ImageView photo;
         private TextView name;
         private TextView state;
-        private ImageButton change_photo;
-        private ImageButton change_state;
+
         private Button followButton;
-        private View expandableList;
+
 
 
         public ProfileViewHolder(@NonNull View ProfileView) {
@@ -65,31 +71,23 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             name = ProfileView.findViewById(R.id.name_profile);
             photo = ProfileView.findViewById(R.id.photo_profile);
             state = ProfileView.findViewById(R.id.state_profile);
-            expandableList = ProfileView.findViewById(R.id.expandable_list_profile);
+
+
         }
 
         public void bind(ProfileData profileData) {
             boolean expanded = profileData.getExpanded();
 
-            expandableList.setVisibility(expanded ? View.VISIBLE : View.GONE);
+
             name.setText(profileData.getName());
             state.setText(profileData.getState());
             Glide.with(context).load(profileData.getPhoto()).into(photo);
-            /*
-            change_photo.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
 
-                }
-            });
 
-            change_state.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
 
-                }
-            });
-*/
         }
     }
+
 
     public class PhoneBookViewHolder extends RecyclerView.ViewHolder {
         private ImageView photo;
@@ -185,9 +183,15 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
         else if(holder instanceof ProfileViewHolder)
         {
-            //TODO: 프로필에 바인드 함수 구현 &
             ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
             profileViewHolder.bind(profileData);
+            profileViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(),ProfileActivity.class);
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -212,7 +216,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void fillter(String searchText, ArrayList<JsonData> backupList){
 
         listViewItemList.clear();
-
+        listViewItemList.add(backupList.get(0));
         for( JsonData item : backupList)
         {
             if(item.getName().toUpperCase().contains(searchText.toUpperCase()))

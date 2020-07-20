@@ -30,6 +30,7 @@
         android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/profile"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
@@ -92,43 +93,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="친구" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/expandable_list_profile"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="4dp"
-        android:gravity="center">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/change_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@android:drawable/stat_notify_sync" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_add" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
     </LinearLayout>
 
 </LinearLayout>

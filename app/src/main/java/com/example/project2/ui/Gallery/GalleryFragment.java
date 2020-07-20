@@ -73,6 +73,75 @@ public class GalleryFragment extends Fragment {
     GalleryAdapter adapter = new GalleryAdapter(new ArrayList<>(), getContext());
     private ArrayList<GalleryData> serverFeeds;
 
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+
+        ivImage = root.findViewById(R.id.picked_Image);
+        checkPermissions();
+        initRetrofitClient();
+
+        Button uploadButton = root.findViewById(R.id.upload_Button);
+        Button cameraButton = root.findViewById(R.id.camera_button);
+        Button galleryButton = root.findViewById(R.id.gallery_button);
+        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
+        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
+
+
+        RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
+
+
+
+        galleryButton.setOnClickListener(v -> {
+            selectGallery();
+            recycler.setVisibility(View.INVISIBLE);
+            linearLayout.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
+            uploadButton.setVisibility(View.VISIBLE);
+
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null) {
+                    multipartImageUpload();
+                }
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+                recycler.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+                ivImage.setImageResource(0);
+            });
+        });
+
+        cameraButton.setOnClickListener(v -> {
+            selectPhoto();
+            recycler.setVisibility(View.INVISIBLE);
+            linearLayout.setVisibility(View.INVISIBLE);
+            ivImage.setVisibility(View.VISIBLE);
+            uploadButton.setVisibility(View.VISIBLE);
+            uploadButton.setOnClickListener(u -> {
+                if (mBitmap != null){
+                    multipartImageUpload();
+                }
+                else {
+                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                }
+                recycler.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
+                ivImage.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+                ivImage.setImageResource(0);
+            });
+        });
+
+
+        return root;
+    }
+
     private void selectPhoto() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -251,74 +320,7 @@ public class GalleryFragment extends Fragment {
     }
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-
-        ivImage = root.findViewById(R.id.picked_Image);
-        checkPermissions();
-        initRetrofitClient();
-
-        Button uploadButton = root.findViewById(R.id.upload_Button);
-        Button cameraButton = root.findViewById(R.id.camera_button);
-        Button galleryButton = root.findViewById(R.id.gallery_button);
-        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
-        RecyclerView recycler = root.findViewById(R.id.gallery_recycler_view);
-
-
-        RecyclerView recyclerView = root.findViewById(R.id.gallery_recycler_view) ;
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
-
-
-
-    galleryButton.setOnClickListener(v -> {
-            selectGallery();
-            recycler.setVisibility(View.INVISIBLE);
-            linearLayout.setVisibility(View.INVISIBLE);
-            ivImage.setVisibility(View.VISIBLE);
-            uploadButton.setVisibility(View.VISIBLE);
-
-            uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null) {
-                    multipartImageUpload();
-                }
-                else {
-                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
-                }
-                recycler.setVisibility(View.VISIBLE);
-                linearLayout.setVisibility(View.VISIBLE);
-                ivImage.setVisibility(View.INVISIBLE);
-                uploadButton.setVisibility(View.INVISIBLE);
-                ivImage.setImageResource(0);
-            });
-        });
-
-        cameraButton.setOnClickListener(v -> {
-            selectPhoto();
-            recycler.setVisibility(View.INVISIBLE);
-            linearLayout.setVisibility(View.INVISIBLE);
-            ivImage.setVisibility(View.VISIBLE);
-            uploadButton.setVisibility(View.VISIBLE);
-            uploadButton.setOnClickListener(u -> {
-                if (mBitmap != null){
-                    multipartImageUpload();
-                }
-                else {
-                    Toast.makeText(getContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
-                }
-                recycler.setVisibility(View.VISIBLE);
-                linearLayout.setVisibility(View.VISIBLE);
-                ivImage.setVisibility(View.INVISIBLE);
-                uploadButton.setVisibility(View.INVISIBLE);
-                ivImage.setImageResource(0);
-            });
-        });
-
-
-        return root;
-    }
 
     final int MULTIPLE_PERMISSION_REQUEST = 0;
 

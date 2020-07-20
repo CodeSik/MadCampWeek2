@@ -1,10 +1,19 @@
 package com.example.project2.ui.phonebook;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -21,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -32,6 +44,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project2.JsonTaskGet;
 import com.example.project2.JsonTaskPost;
 import com.example.project2.R;
+import com.example.project2.ui.Gallery.ApiService;
 import com.facebook.Profile;
 
 import org.json.JSONArray;
@@ -39,6 +52,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,6 +63,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PhoneBookFragment extends Fragment {
     protected static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1;
@@ -57,17 +82,17 @@ public class PhoneBookFragment extends Fragment {
             Manifest.permission.SEND_SMS,
             Manifest.permission.CALL_PHONE
     };
-
+    private final int CAMERA_CODE = 1111;
+    private final int GALLERY_CODE=1112;
+    private static final int RESULT_OK = -1;
     private PhoneBookAdapter adapter;
     private LinearLayoutManager layoutManager;
-
-
     private SearchView searchView;
     private ArrayList<JsonData> inAppContact;
     private ArrayList<JsonData> serverContact;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProfileData profileInfo;
-
+    private CardView profile_photo;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +107,8 @@ public class PhoneBookFragment extends Fragment {
         inAppContact = repository.getContactList();
         serverContact= new ArrayList<>();
         profileInfo = new ProfileData();
+
+        profile_photo = root.findViewById(R.id.profile);
         new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
         new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook/"+id);
         mSwipeRefreshLayout = (SwipeRefreshLayout)root.findViewById(R.id.refresh_layout);
@@ -100,7 +127,6 @@ public class PhoneBookFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-
         for (int i = 0; i < inAppContact.size(); i++) {
             String name = inAppContact.get(i).getName();
             String number = inAppContact.get(i).getNumber();
@@ -114,8 +140,13 @@ public class PhoneBookFragment extends Fragment {
 
         initializeContacts();
         setHasOptionsMenu(true); // For option menu
+
+
+
         return root;
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -134,6 +165,11 @@ public class PhoneBookFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
     }
+
+
+
+
+
 
     private void requestRequiredPermissions() {
         boolean allGranted = true;
