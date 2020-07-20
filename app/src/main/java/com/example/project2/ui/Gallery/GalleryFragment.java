@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,9 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,12 +33,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-
 import com.example.project2.R;
-import com.example.project2.ui.phonebook.JsonData;
-import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +55,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -73,7 +65,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
 
 
 public class GalleryFragment extends Fragment {
@@ -87,8 +78,6 @@ public class GalleryFragment extends Fragment {
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
     private FloatingActionButton fab, camera, gallery;
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;

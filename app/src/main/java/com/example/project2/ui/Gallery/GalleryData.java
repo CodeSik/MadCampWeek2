@@ -4,7 +4,9 @@ public class GalleryData {
 
     private String id;
     private String photoid;
+    private String name;
     private String image;
+    private String profile;
     private String contents;
     private int like;
 
@@ -16,20 +18,21 @@ public class GalleryData {
         this.image = image;
         this.contents = contents;
         this.like = like;
+        this.name = ???;
+        this.profile = ???;
     }
 
     public String getImage() { return image; }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
+    public String getProfile() { return profile; }
 
     public String getContents() { return contents; }
 
     public int getLike() { return like; }
-//    public String getName() {
-//        return name;
-//    }
+
+    public String getName() { return name;}
+
+
 //
 //    public void setName(String name) {
 //        this.name = name;

@@ -62,13 +62,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public void onBindViewHolder(GalleryAdapter.ViewHolder holder, int position) {
         final GalleryData item = listViewItemList.get(position);
-        if (context != null){
-            String a = item.getImage();
-            Glide.with(context).load(item.getImage()).into(holder.image);}
-        else {
-            holder.image.setImageResource(0);
-        }
-        //profile, name 갱신하기
+        Glide.with(context).load(item.getImage()).into(holder.image);
+        Glide.with(context).load(item.getProfile()).into(holder.profile);
+        holder.name.setText(item.getName());
         holder.content.setText(item.getContents());
         holder.likeList.setText("좋아요" + item.getLike() + "개");
     }
