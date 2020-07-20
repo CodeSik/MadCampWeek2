@@ -34,6 +34,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project2.R;
+import com.example.project2.ui.phonebook.PhoneBookFragment;
+import com.example.project2.ui.phonebook.ProfileData;
+import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -82,15 +85,23 @@ public class GalleryFragment extends Fragment {
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
     GalleryAdapter adapter;
+
     private ArrayList<GalleryData> serverFeeds ;
+    private ProfileData profileInfo;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        String id = String.valueOf(Profile.getCurrentProfile().getId());
+        String body = "";
+
         adapter= new GalleryAdapter(new ArrayList<>(), getContext());
         ivImage = root.findViewById(R.id.picked_Image);
         serverFeeds = new ArrayList<>();
+        profileInfo = new ProfileData();
+
 
         fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
@@ -101,10 +112,14 @@ public class GalleryFragment extends Fragment {
 
         checkPermissions();
         initRetrofitClient();
+        initializeFeeds();
+        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
+        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
 
         SwipeRefreshLayout mSwipeRefreshLayout = root.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/");
+            new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
+
             adapter.notifyDataSetChanged();
             mSwipeRefreshLayout.setRefreshing(false);
         });
@@ -403,6 +418,7 @@ public class GalleryFragment extends Fragment {
     private void initializeFeeds() {
         if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             adapter.updateItems(serverFeeds);
+            adapter.updateProfile(profileInfo);
             adapter.notifyDataSetChanged();
         }
     }
@@ -549,7 +565,95 @@ public class GalleryFragment extends Fragment {
 
     }
 
+    public class JsonTaskGetProfile extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(getContext());
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+                try {
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONArray jarray = new JSONArray(result);
+
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String name = jObject.getString("name");
+                    String state = jObject.getString("state");
+                    String photo = jObject.getString("photo");
+                    profileInfo = new ProfileData(id, name, state, photo);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
 
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.updateProfile(profileInfo);
+                    //adapter.notifyDataSetChanged();
+                }
+            });
+            Log.d("printget",result);
+        }
+    }
 
 }

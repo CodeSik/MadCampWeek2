@@ -10,17 +10,20 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
-import com.example.project2.ui.phonebook.;
-
+import com.example.project2.ui.phonebook.ProfileData;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
     private ArrayList<GalleryData> listViewItemList;
+    private ProfileData profileData;
     private Context context;
 
     public GalleryAdapter(ArrayList<GalleryData> items, Context context) {
         this.listViewItemList = items;
+        this.profileData = new ProfileData();
         this.context = context;
     }
 
@@ -30,7 +33,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView profile;
+        private CircleImageView profile;
         private TextView name;
         private TextView content;
         private ImageView image;
@@ -39,7 +42,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         public ViewHolder(View itemView) {
             super(itemView) ;
 
-            profile = itemView.findViewById(R.id.profile);
+            profile = itemView.findViewById(R.id.profile_feed);
             name = itemView.findViewById(R.id.name);
             image = itemView.findViewById(R.id.image);
             likeList = itemView.findViewById(R.id.like_list_Button);
@@ -55,16 +58,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         View view = inflater.inflate(R.layout.fragment_gallery_listview, parent, false) ;
         GalleryAdapter.ViewHolder vh = new ViewHolder(view);
 
-        return vh ;
+        return vh;
     }
 
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     @Override
     public void onBindViewHolder(GalleryAdapter.ViewHolder holder, int position) {
         final GalleryData item = listViewItemList.get(position);
+        final ProfileData profileItem = profileData;
         Glide.with(context).load(item.getImage()).into(holder.image);
-        Glide.with(context).load(item.getProfile()).into(holder.profile);
-        holder.name.setText(item.getName());
+        Glide.with(context).load(profileItem.getPhoto()).into(holder.profile);
+        holder.name.setText(profileItem.getName());
         holder.content.setText(item.getContents());
         holder.likeList.setText("좋아요" + item.getLike() + "개");
     }
@@ -82,6 +86,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         listViewItemList.clear();
         if (items != null)
             listViewItemList.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    public void updateProfile(ProfileData item) {
+        profileData = item;
         notifyDataSetChanged();
     }
 }
