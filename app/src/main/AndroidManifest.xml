@@ -34,10 +34,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.phonebook.StateActivity"></activity>
         <activity
             android:name=".ui.phonebook.GalleryActivity"
             android:label="@string/title_activity_gallery"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.phonebook.CameraActivity"
             android:label="@string/title_activity_camera"

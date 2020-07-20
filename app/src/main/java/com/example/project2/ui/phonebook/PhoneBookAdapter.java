@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Camera;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,20 +13,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.project2.MainActivity;
 import com.example.project2.R;
 
 import java.util.ArrayList;
-
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 
 public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -64,7 +58,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView state;
         private Button cameraButton;
         private Button galleryButton;
-
+        private Button stateButton;
 
 
         public ProfileViewHolder(@NonNull View ProfileView) {
@@ -74,6 +68,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             state = ProfileView.findViewById(R.id.state_profile);
             cameraButton = itemView.findViewById(R.id.CAMERAbutton);
             galleryButton = itemView.findViewById(R.id.GALLERYbutton);
+            stateButton = itemView.findViewById(R.id.STATEbutton);
         }
 
         public void bind(ProfileData profileData) {
@@ -199,6 +194,11 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             profileViewHolder.galleryButton.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), GalleryActivity.class);
+                context.startActivity(intent);
+            });
+
+            profileViewHolder.stateButton.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), StateActivity.class);
                 context.startActivity(intent);
             });
 

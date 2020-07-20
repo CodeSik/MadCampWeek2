@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:paddingLeft="5dp"
     android:paddingTop="5dp"
+    android:paddingRight="5dp"
     android:paddingBottom="5dp"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -87,21 +88,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:weightSum="2">
+        android:weightSum="3">
 
         <Button
             android:id="@+id/CAMERAbutton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Camera" />
 
         <Button
             android:id="@+id/GALLERYbutton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Gallery" />
+
+        <Button
+            android:id="@+id/STATEbutton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="State" />
     </LinearLayout>
 
     <LinearLayout
