@@ -23,8 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_gotipocari_round"
         android:supportsRtl="true"
 
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/AppTheme">
+
         <activity android:name=".ui.phonebook.StateActivity"></activity>
 
         android:theme="@style/AppTheme">

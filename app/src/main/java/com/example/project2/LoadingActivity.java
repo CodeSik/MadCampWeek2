@@ -13,6 +13,8 @@ import android.widget.EditText;
 
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
