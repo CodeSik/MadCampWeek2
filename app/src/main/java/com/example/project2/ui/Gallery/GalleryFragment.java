@@ -692,10 +692,11 @@ public class GalleryFragment extends Fragment {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
+                    String number = jObject.getString("number");
                     String follow = jObject.getString("follow");
                     String state = jObject.getString("state");
                     String photo = jObject.getString("photo");
-                    profileInfo = new ProfileData(id, name, follow, state, photo);
+                    profileInfo = new ProfileData(id, name, number,follow, state, photo);
                 }
 
             } catch (JSONException e) {

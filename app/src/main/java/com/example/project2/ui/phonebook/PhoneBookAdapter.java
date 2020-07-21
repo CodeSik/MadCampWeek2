@@ -73,14 +73,9 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         public void bind(ProfileData profileData) {
             boolean expanded = profileData.getExpanded();
-
-
             name.setText(profileData.getName());
             state.setText(profileData.getState());
             Glide.with(context).load(profileData.getPhoto()).into(photo);
-
-
-
         }
     }
 
@@ -219,7 +214,9 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void updateProfile(ProfileData item) {
-        profileData = item;
+        profileData=null;
+        if (item != null)
+            profileData = item;
         notifyDataSetChanged();
     }
 

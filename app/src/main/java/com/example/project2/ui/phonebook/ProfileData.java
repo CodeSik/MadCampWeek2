@@ -2,6 +2,7 @@ package com.example.project2.ui.phonebook;
 
 public class ProfileData {
 
+    private String number;
     private String id;
     private String name;
     private String follow;
@@ -9,9 +10,10 @@ public class ProfileData {
     private String photo;
     private boolean expanded;
 
-    public ProfileData(String id, String name, String follow, String state, String photo) {
+    public ProfileData(String id, String name, String number, String follow, String state, String photo) {
         this.id = id;
         this.name = name;
+        this.number = number;
         this.follow = follow;
         this.state = state;
         this.photo = photo;
@@ -60,5 +62,8 @@ public class ProfileData {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getNumber() { return number;
     }
 }

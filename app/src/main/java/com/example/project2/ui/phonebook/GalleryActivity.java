@@ -89,31 +89,13 @@ public class GalleryActivity extends AppCompatActivity {
             }
         });
         ivImage.setImageResource(0); //View Reset
-        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
-        updateProfilePhoto();
+
     }
 
-    private void updateProfilePhoto(){
-        String id = String.valueOf(Profile.getCurrentProfile().getId());
-        String name= String.valueOf(Profile.getCurrentProfile().getName());
-        String follow = profileData.getFollow();
-        String state = profileData.getState();
-        String photo = "http://192.249.19.244:1180/uploads/image"+id+".png";
-        String body = "id=" + id + '&' + "name=" + name+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
-        new JsonTaskPut().execute("http://192.249.19.244:1180/users/"+id, body);
-    }
 
+/*
     public class JsonTaskGetProfile extends AsyncTask<String, String, String> {
         ProgressDialog dialog;
-
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(getApplicationContext());
-            //dialog.setCancelable(false);
-            dialog.show();
-
-        }
-
         @Override
         protected String doInBackground(String... urls) {
 
@@ -179,10 +161,11 @@ public class GalleryActivity extends AppCompatActivity {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
+                    String number = jObject.getString("number");
                     String follow = jObject.getString("follow");
                     String state = jObject.getString("state");
                     String photo = jObject.getString("photo");
-                    profileData = new ProfileData(id, name, follow, state, photo);
+                    profileData = new ProfileData(id, name, number,follow, state, photo);
                 }
 
             } catch (JSONException e) {
@@ -194,6 +177,8 @@ public class GalleryActivity extends AppCompatActivity {
         }
 
     }
+
+ */
     private void checkPermissions(){
         /* Set permission */
         ArrayList<String> rejectedPermission = new ArrayList<String>();

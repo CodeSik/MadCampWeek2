@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project2.JsonTaskPost;
+import com.example.project2.JsonTaskPut;
 import com.example.project2.R;
 import com.facebook.Profile;
 
@@ -31,9 +32,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,7 +63,7 @@ public class PhoneBookFragment extends Fragment {
     private ArrayList<JsonData> serverContact;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProfileData profileInfo;
-    private CardView profile_photo;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -75,7 +79,6 @@ public class PhoneBookFragment extends Fragment {
         serverContact= new ArrayList<>();
         profileInfo = new ProfileData();
 
-        profile_photo = root.findViewById(R.id.profile);
         new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
         new JsonTaskGetPhone().execute("http://192.249.19.244:1180/phonebook/"+id);
         mSwipeRefreshLayout = (SwipeRefreshLayout)root.findViewById(R.id.refresh_layout);
@@ -98,11 +101,12 @@ public class PhoneBookFragment extends Fragment {
             String name = inAppContact.get(i).getName();
             String number = inAppContact.get(i).getNumber();
             String photo = inAppContact.get(i).getPhoto();
-
             body = "id=" + id + '&' + "name=" + name + '&' + "number=" + number + '&' + "photo=" + photo;
             new JsonTaskPost().execute("http://192.249.19.244:1180/phonebook", body);
 
         }
+
+        updateProfilePhoto();
 
 
         initializeContacts();
@@ -113,6 +117,16 @@ public class PhoneBookFragment extends Fragment {
         return root;
     }
 
+    private void updateProfilePhoto(){
+        String id = String.valueOf(Profile.getCurrentProfile().getId());
+        String name= String.valueOf(Profile.getCurrentProfile().getName());
+        String number = profileInfo.getNumber();
+        String follow = profileInfo.getFollow();
+        String state = profileInfo.getState();
+        String photo = "http://192.249.19.244:1180/uploads/image"+id+".png";
+        String body = "id=" + id + '&' + "name=" + name+ '&' +"number="+number+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
+        new JsonTaskPutProfile().execute("http://192.249.19.244:1180/users/"+id, body);
+    }
 
 
     @Override
@@ -305,6 +319,7 @@ public class PhoneBookFragment extends Fragment {
                 @Override
                 public void run() {
                     adapter.updateItems(serverContact);
+                    adapter.updateProfile(profileInfo);
                     //adapter.notifyDataSetChanged();
                 }
             });
@@ -395,10 +410,11 @@ public class PhoneBookFragment extends Fragment {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
                     String id = jObject.getString("id");
                     String name = jObject.getString("name");
+                    String number = jObject.getString("number");
                     String follow = jObject.getString("follow");
                     String state = jObject.getString("state");
                     String photo = jObject.getString("photo");
-                    profileInfo = new ProfileData(id, name, follow, state, photo);
+                    profileInfo = new ProfileData(id, name, number, follow, state, photo);
                 }
 
             } catch (JSONException e) {
@@ -414,6 +430,127 @@ public class PhoneBookFragment extends Fragment {
                 }
             });
             Log.d("printget",result);
+        }
+
+    }
+
+    public class JsonTaskPutProfile extends AsyncTask<String, String, String> {
+
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+                String body= urls[1];
+                //JSONObject를 만들고 key value 형식으로 값을 저장해준다.
+
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try{
+                    //URL url = new URL("http://192.249.19.244:1180/phonebook");
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.setRequestMethod("PUT");//POST방식으로 보냄
+                    con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                    con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");//application JSON 형식으로 전송
+                    // con.setRequestProperty("Accept", "text/html");//서버에 response 데이터를 html로 받음
+                    con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                    // con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+                    //Log.d("josn",jsonObject.toString());
+                    con.connect();
+                    Log.d("josn",body);
+                    //서버로 보내기위해서 스트림 만듬
+
+                    OutputStream outStream = con.getOutputStream();
+
+                    //버퍼를 생성하고 넣음
+
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outStream));
+
+                    writer.write(body);
+                    //Log.d("josn123232323",jsonObject.toString());
+                    writer.flush();
+
+                    writer.close();//버퍼를 받아줌
+
+                    //서버로 부터 데이터를 받음
+
+                    InputStream stream = con.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    StringBuffer buffer = new StringBuffer();
+
+                    String line = "";
+
+                    while((line = reader.readLine()) != null){
+
+                        buffer.append(line);
+
+                    }
+                    Log.d("output buffer", buffer.toString());
+                    return buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
+
+                } catch (MalformedURLException e){
+
+                    e.printStackTrace();
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                } finally {
+
+                    if(con != null){
+
+                        con.disconnect();
+
+                    }
+
+                    try {
+
+                        if(reader != null){
+
+                            reader.close();//버퍼를 닫아줌
+
+                        }
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                }
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+            return null;
+
+        }
+
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.updateProfile(profileInfo);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            //Toast.makeText(this,result,0);
         }
 
     }

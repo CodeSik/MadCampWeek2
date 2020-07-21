@@ -1,12 +1,16 @@
 package com.example.project2;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.EditText;
@@ -28,6 +32,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class LoadingActivity extends Activity {
     private CallbackManager callbackManager;
@@ -71,10 +76,11 @@ public class LoadingActivity extends Activity {
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile","email"));
             String id = String.valueOf(Profile.getCurrentProfile().getId());
             String name= String.valueOf(Profile.getCurrentProfile().getName());
+            String number = getPhoneNumber();
             String follow = " ";
             String state = " ";
             String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
-            String body = "id=" + id + '&' + "name=" + name+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
+            String body = "id=" + id + '&' + "name=" + name+ '&' +"number="+number+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
             new JsonTaskPost().execute("http://192.249.19.244:1180/users", body);
         }
 
@@ -84,7 +90,6 @@ public class LoadingActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-
 
 
             }
@@ -116,6 +121,37 @@ public class LoadingActivity extends Activity {
         if (!allGranted)
             requestPermissions(requiredPermissions, PERMISSIONS_REQUEST_ALL);
     }
+
+    @SuppressLint("MissingPermission")
+    public String getPhoneNumber() {
+        TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNumber = "";
+        try {
+            if (telephony.getLine1Number() != null) {
+                phoneNumber = telephony.getLine1Number();
+            } else {
+                if (telephony.getSimSerialNumber() != null) {
+                    phoneNumber = telephony.getSimSerialNumber();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (phoneNumber.startsWith("+82")) {
+            phoneNumber = phoneNumber.replace("+82", "0"); // +8210xxxxyyyy 로 시작되는 번호
+
+        }
+        //phoneNumber = phoneNumber.substring(phoneNumber.length()-10,phoneNumber.length());
+        //phoneNumber="0"+phoneNumber;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            phoneNumber = PhoneNumberUtils.formatNumber(phoneNumber, Locale.getDefault().getCountry());
+        } else {
+            phoneNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+        }
+        return phoneNumber;
+    }
+
     @Override
     public void onBackPressed()
     {
