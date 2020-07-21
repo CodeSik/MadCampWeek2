@@ -82,7 +82,7 @@ public class ContentActivity extends AppCompatActivity {
             //upload
             String userid = id;
             String photoid = newphotoid.toString();
-            String image = "image" + photoid;
+            String image = "http://192.249.19.244:1180/uploads/image" + photoid+".png";
             String contents = feedContents;
             int like = 0;
             body.set("id=" + userid + '&' + "photoid=" + photoid + '&' + "image=" + image + '&' + "contents=" + contents + '&' + "number=" + like);
