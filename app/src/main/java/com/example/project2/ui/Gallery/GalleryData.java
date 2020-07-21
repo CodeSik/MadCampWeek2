@@ -6,7 +6,6 @@ public class GalleryData {
     private String photoid;
     private String name;
     private String image;
-    private String profile;
     private String contents;
     private int like;
 

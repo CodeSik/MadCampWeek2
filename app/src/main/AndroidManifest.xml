@@ -43,7 +43,9 @@
             android:theme="@style/AppTheme.TransparentActivity" />
         <activity
             android:name=".ui.instamaterial.ui.activity.UserProfileActivity"
+
             android:screenOrientation="portrait"
+
             android:theme="@style/AppTheme.TransparentActivity" />
 
         <activity
