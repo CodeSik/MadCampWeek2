@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,7 +44,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static Context context;
     private OnFeedItemClickListener onFeedItemClickListener;
 
-    private boolean showLoadingView = false;
+    private boolean showLoadingView = true;
 
     public FeedAdapter(Context context) {
         this.context = context;
@@ -177,9 +178,18 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void updateItems(boolean animated, ArrayList<FeedItem> feeditems) {
         feedItems.clear();
         feedItems.addAll(feeditems);
+        Collections.reverse(feeditems);
         if (animated) {
             notifyItemRangeInserted(0, feedItems.size());
             notifyDataSetChanged();
+        } else {
+            notifyDataSetChanged();
+        }
+    }
+    public void updateItems(boolean animated) {
+
+        if (animated) {
+            notifyItemRangeInserted(0, feedItems.size());
         } else {
             notifyDataSetChanged();
         }

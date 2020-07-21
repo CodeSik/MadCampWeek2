@@ -109,6 +109,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insta);
+        pendingIntroAnimation = true;
         setupFeed();
         feeditems = new ArrayList<>();
         new JsonTaskGetfeed().execute("http://192.249.19.244:1180/gallery/");
@@ -123,7 +124,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
         } else {
-            feedAdapter.updateItems(false,feeditems);
+            feedAdapter.updateItems(true,feeditems);
         }
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -490,11 +491,12 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
             super.onPostExecute(result);
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
             ArrayList<Integer> photoidList = new ArrayList<>();
+            int photoid = -1;
             try {
                 JSONArray jarray = new JSONArray(result);
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-                    int photoid = Integer.parseInt(jObject.getString("photoid"));
+                    photoid = Integer.parseInt(jObject.getString("photoid"));
                     String WriterId = jObject.getString("id");
                     String WriterName = jObject.getString("name");
 
@@ -507,8 +509,16 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            newphotoid = Collections.max(photoidList);
-            newphotoid += 1;
+
+            if (photoid == -1){
+                newphotoid = 1;
+            }
+            else
+            {
+                newphotoid = Collections.max(photoidList);
+                newphotoid += 1;
+            }
+
         }
     }
 }
