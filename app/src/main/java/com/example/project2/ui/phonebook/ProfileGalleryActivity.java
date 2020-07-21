@@ -44,12 +44,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 
-public class GalleryActivity extends AppCompatActivity {
+public class ProfileGalleryActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int GALLERY_CODE = 1111;
     private String id;
-    private String newPhotoId;
-    private String name;
     ApiService apiService;
     Bitmap mBitmap;
     Bitmap sBitmap;
@@ -66,9 +64,6 @@ public class GalleryActivity extends AppCompatActivity {
         selectGallery();
         initRetrofitClient();
 
-        Bundle extras = getIntent().getExtras();
-        newPhotoId = extras.getString("newPhotoId");
-        name = extras.getString("name");
         FloatingActionButton fab = findViewById(R.id.uploadButton3);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,7 +214,7 @@ public class GalleryActivity extends AppCompatActivity {
     private void multipartImageUpload() {
         try {
             File filesDir = getApplicationContext().getFilesDir();
-            File file = new File(filesDir, "image" + newPhotoId + ".png"); //file name = image.png
+            File file = new File(filesDir, "image" + id + ".png"); //file name = image.png
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -242,7 +237,6 @@ public class GalleryActivity extends AppCompatActivity {
                     if (response.code() == 200) {
                         Toast.makeText(getApplicationContext(), "upload success", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(getApplicationContext(), response.code() + " ", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -259,17 +253,6 @@ public class GalleryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //contentActivity 실행
-        Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
-
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        intent.putExtra("image", byteArray);
-        intent.putExtra("newPhotoId", newPhotoId);
-        intent.putExtra("name", name);
-        startActivity(intent);
 
         //View reset
         mBitmap = null;

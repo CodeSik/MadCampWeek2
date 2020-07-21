@@ -197,7 +197,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             });
 
             profileViewHolder.galleryButton.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), GalleryActivity.class);
+                Intent intent = new Intent(v.getContext(), ProfileGalleryActivity.class);
                 context.startActivity(intent);
             });
 
