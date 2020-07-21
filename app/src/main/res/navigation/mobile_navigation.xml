@@ -28,4 +28,8 @@
         android:name="com.example.project2.ui.Dial.Dial"
         android:label="@string/title_dial"
         tools:layout="@layout/fragment_dial" />
+    <activity
+        android:id="@+id/navigation_instaActivity"
+        android:name="com.example.project2.ui.instamaterial.ui.activity.InstaActivity"
+        android:label="InstaActivity" />
 </navigation>

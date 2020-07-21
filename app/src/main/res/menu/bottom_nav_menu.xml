@@ -24,7 +24,13 @@
         android:title="@string/title_dashboard"
         app:itemIconTint="@color/colorPrimaryDark"
         app:itemTextColor="@color/colorPrimaryDark" />
-
+    <item
+        android:id="@+id/navigation_instaActivity"
+        android:fontFamily="@font/font"
+        android:icon="@drawable/ic_picture"
+        android:title="@string/title_dashboard"
+        app:itemIconTint="@color/colorPrimaryDark"
+        app:itemTextColor="@color/colorPrimaryDark" />
     <item
         android:id="@+id/navigation_randomgame"
         android:fontFamily="@font/font"
