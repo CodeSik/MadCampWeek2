@@ -1,7 +1,6 @@
 package com.example.project2.ui.phonebook;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,10 +9,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,30 +19,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.example.project2.JsonTaskPost;
-import com.example.project2.JsonTaskPut;
-import com.example.project2.MainActivity;
 import com.example.project2.R;
 import com.example.project2.ui.Gallery.ApiService;
 import com.example.project2.ui.instamaterial.ui.activity.ContentActivity;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -59,14 +43,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import java.io.ByteArrayOutputStream;
-
 
 public class GalleryActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int GALLERY_CODE = 1111;
     private String id;
     private String newPhotoId;
+    private String name;
     ApiService apiService;
     Bitmap mBitmap;
     Bitmap sBitmap;
@@ -85,6 +68,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         newPhotoId = extras.getString("newPhotoId");
+        name = extras.getString("name");
         FloatingActionButton fab = findViewById(R.id.uploadButton3);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -282,6 +266,7 @@ public class GalleryActivity extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
         intent.putExtra("image", byteArray);
         intent.putExtra("newPhotoId", newPhotoId);
+        intent.putExtra("name", name);
         startActivity(intent);
 
         //View reset

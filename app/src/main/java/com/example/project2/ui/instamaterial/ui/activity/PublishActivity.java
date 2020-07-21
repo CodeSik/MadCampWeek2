@@ -28,10 +28,6 @@ import com.example.project2.ui.instamaterial.Utils;
 public class PublishActivity extends BaseActivity {
     public static final String ARG_TAKEN_PHOTO_URI = "arg_taken_photo_uri";
 
-    @BindView(R.id.tbFollowers)
-    ToggleButton tbFollowers;
-    @BindView(R.id.tbDirect)
-    ToggleButton tbDirect;
     @BindView(R.id.ivPhoto)
     ImageView ivPhoto;
 
@@ -129,21 +125,4 @@ public class PublishActivity extends BaseActivity {
         outState.putParcelable(ARG_TAKEN_PHOTO_URI, photoUri);
     }
 
-    @OnCheckedChanged(R.id.tbFollowers)
-    public void onFollowersCheckedChange(boolean checked) {
-        if (!propagatingToggleState) {
-            propagatingToggleState = true;
-            tbDirect.setChecked(!checked);
-            propagatingToggleState = false;
-        }
-    }
-
-    @OnCheckedChanged(R.id.tbDirect)
-    public void onDirectCheckedChange(boolean checked) {
-        if (!propagatingToggleState) {
-            propagatingToggleState = true;
-            tbFollowers.setChecked(!checked);
-            propagatingToggleState = false;
-        }
-    }
 }

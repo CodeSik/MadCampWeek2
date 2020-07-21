@@ -50,6 +50,7 @@ public class CameraActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int CAMERA_CODE = 1111;
     private String newPhotoId;
+    private String name;
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
@@ -67,6 +68,7 @@ public class CameraActivity extends AppCompatActivity {
         id = String.valueOf(Profile.getCurrentProfile().getId());
         Bundle extras = getIntent().getExtras();
         newPhotoId = extras.getString("newPhotoId");
+        name = extras.getString("name");
         //select Photo by Camera
         checkPermissions();
         selectPhoto();
@@ -295,6 +297,7 @@ public class CameraActivity extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
         intent.putExtra("image", byteArray);
         intent.putExtra("newPhotoId", newPhotoId);
+        intent.putExtra("name", name);
         startActivity(intent);
 
         sBitmap = null;

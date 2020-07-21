@@ -34,8 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.instamaterial.ui.activity.ContentActivity"></activity>
-        <activity android:name=".ui.instamaterial.ui.activity.PhotoActivity" />
+        <activity android:name=".ui.instamaterial.ui.activity.ContentActivity" />
         <activity android:name=".ui.phonebook.StateActivity" />
         <activity
             android:name=".ui.instamaterial.ui.activity.InstaActivity"
