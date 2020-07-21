@@ -194,6 +194,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             public void onLoadingFinished() {
                 showLoadingView = false;
                 notifyItemChanged(0);
+
             }
         });
         holder.loadingFeedItemView.startLoading();
@@ -205,7 +206,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (showLoadingView && position == 0) {
+        if (showLoadingView && position == 0 ) {
             return VIEW_TYPE_LOADER;
         } else {
             return VIEW_TYPE_DEFAULT;

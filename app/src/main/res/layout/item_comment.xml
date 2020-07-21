@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp">
+        android:paddingTop="18dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="41dp"
+            android:layout_height="43dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/default_user_icon" />
 
         <TextView
             android:id="@+id/ivUserAvatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/tvComment"
@@ -23,13 +34,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="16dp"
-            android:layout_weight="9.0" />
+            android:layout_weight="10.0"
+            android:text="hello!" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="88dp"
-        android:background="#cccccc" />
 </FrameLayout>

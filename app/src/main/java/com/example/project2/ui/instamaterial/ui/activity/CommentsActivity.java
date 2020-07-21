@@ -81,11 +81,16 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         setContentView(R.layout.activity_comments);
         setupComments();
         setupSendCommentButton();
+
         recvitems = new ArrayList<CommentItem>();
         drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
         photoid = getIntent().getStringExtra("photoid");
         name = getIntent().getStringExtra("name");
+        CommentItem initialItem = new CommentItem(photoid,"이름","덧글");
+        recvitems.add(initialItem);
+        commentsAdapter.addItem(recvitems);
 
+        new JsonTaskCommentGet().execute("http://192.249.19.244:1180/comment/"+photoid);
         //new JsonTaskCommentGet().execute("http://192.249.19.244:1180/comment", body);
         etComment.addTextChangedListener(new TextWatcher() {
             @Override
@@ -121,6 +126,8 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         } else if (Build.VERSION.SDK_INT < 21) {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
+
+
     }
 
     private void setupComments() {
@@ -201,13 +208,14 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
             body = "photoid=" + sdphotoid + '&' + "name=" + sdname + '&' + "comment=" + sdcomment;
             new JsonTaskCommentPost().execute("http://192.249.19.244:1180/comment", body);
 
-            new JsonTaskCommentGet().execute("http://192.249.19.244:1180/comment/photoid");
+            new JsonTaskCommentGet().execute("http://192.249.19.244:1180/comment"+sdphotoid);
 
             commentsAdapter.setAnimationsLocked(false);
             commentsAdapter.setDelayEnterAnimation(false);
             rvComments.smoothScrollBy(0, rvComments.getChildAt(0).getHeight() * commentsAdapter.getItemCount());
 
             btnSendComment.setCurrentState(SendCommentButton.STATE_DONE);
+            commentsAdapter.notifyDataSetChanged();
 
         }
     }
@@ -250,7 +258,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                     // con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
                     //Log.d("josn",jsonObject.toString());
                     con.connect();
-                    Log.d("josn", body);
+
                     //서버로 보내기위해서 스트림 만듬
 
                     OutputStream outStream = con.getOutputStream();
@@ -280,7 +288,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                         buffer.append(line);
 
                     }
-                    Log.d("output buffer", buffer.toString());
+
                     return buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
 
                 } catch (MalformedURLException e) {
@@ -413,23 +421,25 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
             dialog.dismiss();
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
             recvitems.clear();
-            commentsAdapter.getCommentItems().clear();
+//            commentsAdapter.getCommentItems().clear();
             try {
-                JSONArray jarray = new JSONArray(result);
+                if(result != null) {
+                    JSONArray jarray = new JSONArray(result);
 
-                for (int i = 0; i < jarray.length(); i++) {
-                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-                    String photoid = jObject.getString("id");
-                    String name = jObject.getString("name");
-                    String comment = jObject.getString("comment");
-                    CommentItem data = new CommentItem(photoid,name,comment);
-                    recvitems.add(data);
+                    for (int i = 0; i < jarray.length(); i++) {
+                        JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                        String photoid = jObject.getString("photoid");
+                        String name = jObject.getString("name");
+                        String comment = jObject.getString("comment");
+                        CommentItem data = new CommentItem(photoid, name, comment);
+                        recvitems.add(data);
+                    }
+
                 }
-
-
             }catch (JSONException e) {
                 e.printStackTrace();
             }
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -437,7 +447,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                     commentsAdapter.notifyDataSetChanged();
                 }
             });
-            Log.d("printget",result);
+
         }
     }
 }

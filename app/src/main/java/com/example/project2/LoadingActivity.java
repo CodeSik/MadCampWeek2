@@ -30,6 +30,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.login.LoginManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Arrays;
@@ -56,7 +57,6 @@ public class LoadingActivity extends Activity {
             Manifest.permission.CALL_PHONE
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +66,11 @@ public class LoadingActivity extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("email");
-        loginButton.setReadPermissions("public_profile");
+        Button loginButton = (Button) findViewById(R.id.button3);
+
+//        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+//        loginButton.setReadPermissions("email");
+//        loginButton.setReadPermissions("public_profile");
 
         loginButton.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -76,7 +78,33 @@ public class LoadingActivity extends Activity {
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
                 if (isLoggedIn) {
-                    LoginManager.getInstance().logInWithReadPermissions(LoadingActivity.this, Arrays.asList("public_profile","email"));
+                    LoginManager loginManager = LoginManager.getInstance();
+                    loginManager.logInWithReadPermissions(LoadingActivity.this, Arrays.asList("public_profile","email"));
+                    loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            // App code
+
+
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            // App code
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
+
+
+                            Toast.makeText( getApplicationContext() , "페이스북 로그인을 취소하셨습니다." , Toast.LENGTH_LONG ).show();
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception) {
+                            // App code
+                            Toast.makeText( getApplicationContext() , exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                     String id = String.valueOf(Profile.getCurrentProfile().getId());
                     String name= String.valueOf(Profile.getCurrentProfile().getName());
                     String number = getPhoneNumber();
@@ -93,31 +121,31 @@ public class LoadingActivity extends Activity {
 
 
 // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-
-
-            }
-
-            @Override
-            public void onCancel() {
-                // App code
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-
-
-                Toast.makeText( getApplicationContext() , "페이스북 로그인을 취소하셨습니다." , Toast.LENGTH_LONG ).show();
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-                Toast.makeText( getApplicationContext() , exception.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                // App code
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                // App code
+//                Intent intent = getIntent();
+//                finish();
+//                startActivity(intent);
+//
+//
+//                Toast.makeText( getApplicationContext() , "페이스북 로그인을 취소하셨습니다." , Toast.LENGTH_LONG ).show();
+//            }
+//
+//            @Override
+//            public void onError(FacebookException exception) {
+//                // App code
+//                Toast.makeText( getApplicationContext() , exception.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        });
 
 
     }

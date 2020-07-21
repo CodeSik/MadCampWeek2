@@ -71,21 +71,21 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="John Smith"
+                                android:text="Geonsik Seo"
                                 android:textColor="#ffffff"
                                 android:textSize="24sp" />
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="\@jsmith"
+                                android:text="\@sik_gn"
                                 android:textColor="#bbbbbb"
                                 android:textSize="12sp" />
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Mobile development passionate."
+                                android:text="몰입캠프 화이팅~"
                                 android:textColor="#ffffff"
                                 android:textSize="12sp" />
 
@@ -119,9 +119,9 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/posts_numbers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="1167"
                                 android:textColor="#ffffff"
                                 android:textSize="20sp" />
 

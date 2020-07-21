@@ -9,7 +9,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -17,6 +19,7 @@ import com.example.project2.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,15 +40,15 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final Context context;
     private final int cellSize;
 
-    private final List<String> photos;
+    private ArrayList<String> photos;
 
     private boolean lockedAnimations = false;
     private int lastAnimatedItem = -1;
 
-    public UserProfileAdapter(Context context) {
+    public UserProfileAdapter(Context context, ArrayList<String> photo) {
         this.context = context;
         this.cellSize = Utils.getScreenWidth(context) / 3;
-        this.photos = Arrays.asList(context.getResources().getStringArray(R.array.user_photos));
+        this.photos =photo;
     }
 
     @Override
@@ -62,6 +65,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         bindPhoto((PhotoViewHolder) holder, position);
+
+
     }
 
     private void bindPhoto(final PhotoViewHolder holder, int position) {
@@ -80,6 +85,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                     }
                 });
+
+
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 

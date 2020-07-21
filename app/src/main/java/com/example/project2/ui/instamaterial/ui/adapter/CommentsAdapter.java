@@ -35,7 +35,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private boolean animationsLocked = false;
     private boolean delayEnterAnimation = true;
-    private ArrayList<CommentItem> commentItems;
+    private ArrayList<CommentItem> commentItems = new ArrayList<>();
     public CommentsAdapter(Context context) {
         this.context = context;
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
@@ -44,7 +44,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
-        commentItems = new ArrayList<>();
+
         return new CommentViewHolder(view);
     }
 
@@ -97,7 +97,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return itemsCount;
+        return commentItems.size();
     }
 
     public void updateItems() {
@@ -106,10 +106,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void addItem(ArrayList<CommentItem> items) {
-        commentItems.clear();
+        //commentItems.clear();
         commentItems.addAll(items);
-        itemsCount++;
-        notifyItemInserted(itemsCount - 1);
+
+        notifyItemInserted(commentItems.size() - 1);
     }
 
     public void setAnimationsLocked(boolean animationsLocked) {

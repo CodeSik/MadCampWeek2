@@ -1,11 +1,11 @@
 <resources>
 
 
-    <string name="title_phonebook">전화번호부</string>
-    <string name="title_dashboard">갤러리</string>
+    <string name="title_phonebook">PhoneBook</string>
+    <string name="title_dashboard">Travel Mate</string>
     <string name="title_randomgame">랜덤게임</string>
     <string name="title_search">검색</string>
-    <string name="title_dial">다이얼</string>
+    <string name="title_dial">Dial</string>
     <string name="title_argame">AR Game</string>
     <string name="randgame_button_text">Spin!</string>
     <string name="action_search">검색</string>
