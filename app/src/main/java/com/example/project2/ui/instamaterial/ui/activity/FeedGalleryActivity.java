@@ -1,27 +1,27 @@
-package com.example.project2.ui.phonebook;
+package com.example.project2.ui.instamaterial.ui.activity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import com.example.project2.R;
 import com.example.project2.ui.Gallery.ApiService;
+import com.example.project2.ui.phonebook.ProfileData;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -30,9 +30,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Objects;
 
 import okhttp3.MediaType;
@@ -45,51 +43,48 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class ProfileCameraActivity extends AppCompatActivity {
-    public ImageView ivImage;
-    private final int CAMERA_CODE = 1111;
+public class FeedGalleryActivity extends AppCompatActivity {
 
-    private String currentPhotoPath; //실제 사진 파일 경로
-    String mImageCaptureName; //이미지 이름
+    public ImageView ivImage;
+    private final int GALLERY_CODE = 1111;
+    private String id;
+    private String newPhotoId;
+    private String name;
+    ApiService apiService;
     Bitmap mBitmap;
     Bitmap sBitmap;
     final int MULTIPLE_PERMISSION_REQUEST = 0;
-    ApiService apiService;
-    private String id;
-
+    private ProfileData profileData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.activity_gallery);
         checkPermissions();
-        ivImage = (ImageView) findViewById(R.id.uploadView);
+        ivImage = (ImageView) findViewById(R.id.uploadView2);
         id = String.valueOf(Profile.getCurrentProfile().getId());
 
-
-
-        //select Photo by Camera
-
-        selectPhoto();
+        selectGallery();
         initRetrofitClient();
 
-        //upload Photo
-        FloatingActionButton uploadButton = findViewById(R.id.uploadButton2);
-        uploadButton.setOnClickListener(new View.OnClickListener() {
+        Bundle extras = getIntent().getExtras();
+        newPhotoId = extras.getString("newPhotoId");
+        name = extras.getString("name");
+        FloatingActionButton fab = findViewById(R.id.uploadButton3);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mBitmap != null) {
-                    multipartImageUpload();
+                    multipartImageUpload();// 이 함수 마지막에 contentActivity를 실행
                     finish();
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
                     finish();
                 }
-
             }
         });
-
     }
+
 
     private void checkPermissions(){
         /* Set permission */
@@ -132,73 +127,48 @@ public class ProfileCameraActivity extends AppCompatActivity {
         }
     }
 
-    /*take a picture*/
-    private void selectPhoto() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (intent.resolveActivity(Objects.requireNonNull(getApplicationContext()).getPackageManager()) != null) {
-                File photoFile = null;
-                try { photoFile = createImageFile(); }
-                catch (IOException ignored) { }
-                if (photoFile != null) {
-                    Uri photoURI = FileProvider.getUriForFile(
-                            getApplicationContext(),
-                            "com.example.project2",
-                            photoFile
-                    );
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(intent, CAMERA_CODE);
-                }
-            }
-        }
+    private void selectGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, GALLERY_CODE);
     }
-
-    private File createImageFile() throws IOException {
-        File dir = new File(Environment.getExternalStorageDirectory() + "/path/");
-        if (!dir.exists()) {
-            dir.mkdirs(); }
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        mImageCaptureName = timeStamp + ".png";
-        File storageDir = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/path/" + mImageCaptureName);
-        currentPhotoPath = storageDir.getAbsolutePath();
-        return storageDir;
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK) {
-            if (requestCode == CAMERA_CODE) {
-                getPictureForPhoto();
+            if (requestCode == GALLERY_CODE) {
+                sendPicture(data.getData()); //갤러리에서 가져오기
             }
         }
     }
 
-    /*treat the picture by currentPhotoPath*/
-    private void getPictureForPhoto() {
-        Bitmap bitmap = getResizePicture(currentPhotoPath, 1000);
-        Bitmap smallBitmap = getResizePicture(currentPhotoPath, 300);
-
+    private void sendPicture(Uri imgUri) {
+        String imagePath = getRealPathFromURI(imgUri); // path 경로
         ExifInterface exif = null;
-        try { exif = new ExifInterface(currentPhotoPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int exifOrientation;
-        int exifDegree;
-        if (exif != null) {
-            exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            exifDegree = exifOrientationToDegrees(exifOrientation);
-        } else {
-            exifDegree = 0;
-        }
+        try { exif = new ExifInterface(imagePath); } catch (IOException e) { e.printStackTrace(); }
+        int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int exifDegree = exifOrientationToDegrees(exifOrientation);
+
+        //경로를 통해 비트맵으로 전환
+        Bitmap bitmap = getResizePicture(imagePath, 1000);
+        Bitmap smallBitmap = getResizePicture(imagePath, 300);
+
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
-        //ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
-        mBitmap = finalBitmap;
-        sBitmap = smallBitmap;
+
+        //이미지 뷰에 비트맵 넣기
+        mBitmap = finalBitmap;//서버 업로드용
+        sBitmap = rotate(smallBitmap, exifDegree);//content activity 전달용
         ivImage.setImageBitmap(finalBitmap);
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        int column_index=0; String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getApplicationContext().getContentResolver().query(contentUri, proj, null, null, null);
+        assert cursor != null;
+        if(cursor.moveToFirst()){ column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        } return cursor.getString(column_index);
     }
 
     private Bitmap getResizePicture(String imagePath, int resize){ //사진 용량을 줄여주는 함수
@@ -240,7 +210,6 @@ public class ProfileCameraActivity extends AppCompatActivity {
         return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
     }
 
-
     /*upload*/
     private void initRetrofitClient() {
         OkHttpClient client = new OkHttpClient.Builder().build();
@@ -250,7 +219,7 @@ public class ProfileCameraActivity extends AppCompatActivity {
     private void multipartImageUpload() {
         try {
             File filesDir = getApplicationContext().getFilesDir();
-            File file = new File(filesDir, "image" + id + ".png"); //file name = image.png
+            File file = new File(filesDir, "image" + newPhotoId + ".png"); //file name = image.png
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -289,12 +258,21 @@ public class ProfileCameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        //contentActivity 실행
+        Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
 
 
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        intent.putExtra("image", byteArray);
+        intent.putExtra("newPhotoId", newPhotoId);
+        intent.putExtra("name", name);
+        startActivity(intent);
 
-        sBitmap = null;
+        //View reset
         mBitmap = null;
-        ivImage.setImageResource(0); //View Reset
+        sBitmap = null;
+        ivImage.setImageResource(0);
     }
-
 }

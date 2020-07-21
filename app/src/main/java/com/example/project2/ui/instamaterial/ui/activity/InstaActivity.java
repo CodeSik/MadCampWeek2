@@ -35,8 +35,7 @@ import com.example.project2.ui.instamaterial.ui.adapter.FeedItemAnimator;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenu;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenuManager;
 
-import com.example.project2.ui.phonebook.ProfileCameraActivity;
-import com.example.project2.ui.phonebook.GalleryActivity;
+import com.example.project2.ui.phonebook.ProfileGalleryActivity;
 import com.facebook.Profile;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -268,7 +267,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
 
         gallery.setOnClickListener(v -> {
             anim();
-            Intent intent = new Intent(getApplicationContext(), GalleryActivity.class);
+            Intent intent = new Intent(getApplicationContext(), FeedGalleryActivity.class);
             intent.putExtra("newPhotoId", newphotoid.toString());
             intent.putExtra("name", name);
             startActivity(intent);

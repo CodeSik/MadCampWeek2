@@ -34,7 +34,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.instamaterial.ui.activity.FeedCameraActivity"></activity>
+        <activity android:name=".ui.instamaterial.ui.activity.FeedGalleryActivity"></activity>
+        <activity android:name=".ui.instamaterial.ui.activity.FeedCameraActivity" />
         <activity android:name=".ui.instamaterial.ui.activity.ContentActivity" />
         <activity android:name=".ui.phonebook.StateActivity" />
         <activity
@@ -68,7 +69,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".ui.phonebook.GalleryActivity"
+            android:name=".ui.phonebook.ProfileGalleryActivity"
             android:label="@string/title_activity_gallery"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

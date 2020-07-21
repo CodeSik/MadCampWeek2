@@ -274,7 +274,6 @@ public class FeedCameraActivity extends AppCompatActivity {
                         if (response.code() == 200) {
                             Toast.makeText(getApplicationContext(), "upload success", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getApplicationContext(), response.code() + " ", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
