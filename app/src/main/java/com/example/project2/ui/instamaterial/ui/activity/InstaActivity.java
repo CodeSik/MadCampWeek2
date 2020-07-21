@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -25,6 +27,7 @@ import com.example.project2.ui.instamaterial.ui.adapter.FeedAdapter;
 import com.example.project2.ui.instamaterial.ui.adapter.FeedItemAnimator;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenu;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenuManager;
+import com.example.project2.ui.phonebook.ProfileActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -58,8 +61,6 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insta);
-
-
 
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
@@ -214,14 +215,25 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
 
     @OnClick(R.id.btnCreate)
     public void onTakePhotoClick() {
-        int[] startingLocation = new int[2];
-        fabCreate.getLocationOnScreen(startingLocation);
-        startingLocation[0] += fabCreate.getWidth() / 2;
-       // TakePhotoActivity.startCameraFromLocation(startingLocation, this);
+
+//        int[] startingLocation = new int[2];
+//        fabCreate.getLocationOnScreen(startingLocation);
+//        startingLocation[0] += fabCreate.getWidth() / 2;
+//        TakePhotoActivity.startCameraFromLocation(startingLocation, this);
+        Intent intent = new Intent(getApplicationContext(), PhotoActivity.class);
+        startActivity(intent);
+
+
+
         overridePendingTransition(0, 0);
     }
 
     public void showLikedSnackbar() {
         Snackbar.make(clContent, "Liked!", Snackbar.LENGTH_SHORT).show();
     }
+    public void showUnLikedSnackbar() {
+        Snackbar.make(clContent, "UnLiked!", Snackbar.LENGTH_SHORT).show();
+    }
+
+
 }

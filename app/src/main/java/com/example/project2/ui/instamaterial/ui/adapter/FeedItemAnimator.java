@@ -97,7 +97,12 @@ public class FeedItemAnimator extends DefaultItemAnimator {
             FeedItemHolderInfo feedItemHolderInfo = (FeedItemHolderInfo) preInfo;
             FeedAdapter.CellFeedViewHolder holder = (FeedAdapter.CellFeedViewHolder) newHolder;
 
-            animateHeartButton(holder);
+            if (holder.getFeedItem().isLiked) {
+                animateHeartButton(holder);
+            }
+            else {
+                animateHeartButton_unlike(holder);
+            }
             updateLikesCounter(holder, holder.getFeedItem().likesCount);
             if (FeedAdapter.ACTION_LIKE_IMAGE_CLICKED.equals(feedItemHolderInfo.updateAction)) {
                 animatePhotoLike(holder);
@@ -134,6 +139,41 @@ public class FeedItemAnimator extends DefaultItemAnimator {
             @Override
             public void onAnimationStart(Animator animation) {
                 holder.btnLike.setImageResource(R.drawable.ic_heart_red);
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                heartAnimationsMap.remove(holder);
+                dispatchChangeFinishedIfAllAnimationsEnded(holder);
+            }
+        });
+
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+        animatorSet.start();
+
+        heartAnimationsMap.put(holder, animatorSet);
+    }
+
+    private void animateHeartButton_unlike(final FeedAdapter.CellFeedViewHolder holder) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.btnLike, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.btnLike, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.btnLike, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.btnLike.setImageResource(R.drawable.ic_heart_outline_grey);
+
             }
 
             @Override

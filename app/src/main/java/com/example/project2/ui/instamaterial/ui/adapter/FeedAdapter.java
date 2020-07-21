@@ -92,10 +92,14 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 notifyItemChanged(adapterPosition, ACTION_LIKE_IMAGE_CLICKED);
                 if (context instanceof InstaActivity) {
-                    ((InstaActivity) context).showLikedSnackbar();
+                    if (feedItems.get(adapterPosition).isLiked)
+                        ((InstaActivity) context).showLikedSnackbar();
+                    else
+                        ((InstaActivity) context).showUnLikedSnackbar();
                 }
             }
         });
+
         cellFeedViewHolder.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,7 +114,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 notifyItemChanged(adapterPosition, ACTION_LIKE_BUTTON_CLICKED);
                 if (context instanceof InstaActivity) {
-                    ((InstaActivity) context).showLikedSnackbar();
+                    if (feedItems.get(adapterPosition).isLiked)
+                        ((InstaActivity) context).showLikedSnackbar();
+                    else
+                        ((InstaActivity) context).showUnLikedSnackbar();
+
                 }
             }
         });

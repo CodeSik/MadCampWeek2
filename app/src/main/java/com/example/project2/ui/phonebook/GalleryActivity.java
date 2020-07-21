@@ -88,8 +88,6 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
         });
-        ivImage.setImageResource(0); //View Reset
-
     }
 
 
@@ -350,6 +348,8 @@ public class GalleryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         mBitmap = null;
+        ivImage.setImageResource(0); //View Reset
+        finish();
     }
 
 }

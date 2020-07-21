@@ -82,7 +82,6 @@ public class CameraActivity extends AppCompatActivity {
 
             }
         });
-        ivImage.setImageResource(0); //View Reset
 
     }
 
@@ -283,6 +282,8 @@ public class CameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         mBitmap = null;
+        ivImage.setImageResource(0); //View Reset
+        finish();
     }
 
 }

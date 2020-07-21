@@ -14,8 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/barley" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/uploadButton2"
@@ -24,7 +23,7 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/stat_sys_upload_done" />
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
