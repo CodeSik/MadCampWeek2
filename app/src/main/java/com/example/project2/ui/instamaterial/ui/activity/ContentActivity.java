@@ -20,9 +20,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ContentActivity extends AppCompatActivity {
-    private Button upload;
-    private EditText contents_input;
-    private ImageView imageView;
     private String feedContents;
     private String newPhotoId;
     private String username;
@@ -31,10 +28,10 @@ public class ContentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_publish);
-
-        upload = findViewById(R.id.button2);
-        imageView = findViewById(R.id.ivPhoto);
-        contents_input = findViewById(R.id.etDescription);
+        feedContents = " ";
+        Button upload = findViewById(R.id.button2);
+        ImageView imageView = findViewById(R.id.ivPhoto);
+        EditText contents_input = findViewById(R.id.etDescription);
         AtomicReference<String> body = new AtomicReference<>("");
         String id = String.valueOf(Profile.getCurrentProfile().getId());
 
@@ -55,7 +52,7 @@ public class ContentActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                feedContents = s.toString();
+                    feedContents = s.toString();
                 //feedContents 가 유저가 입력하는 피드 내용. 이후에 uploadButton 을 누르면 서버에 전송하기.
             }
 

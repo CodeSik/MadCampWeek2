@@ -111,14 +111,15 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         setContentView(R.layout.activity_insta);
         setupFeed();
         feeditems = new ArrayList<>();
-        new JsonTaskGetfeed().execute("http://192.249.19.244:1180/gallery/");
-
+        new JsonTaskGetfeed().execute("http://192.249.19.244:1180/gallery/"); // gallery/ 랑 gallery랑 다름?
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
         camera = findViewById(R.id.CAMERABUTTON);
         gallery = findViewById(R.id.GALLERYBUTTON);
+
         id = String.valueOf(Profile.getCurrentProfile().getId());
         new JsonTaskGetFeedForUpload().execute("http://192.249.19.244:1180/gallery");
+        new JsonTaskGetUserProfile().execute("http://192.249.19.244:1180/users/" + id);
 
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
@@ -318,6 +319,101 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     }
 
 
+    private class JsonTaskGetUserProfile extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+
+
+            dialog = new ProgressDialog(InstaActivity.this);
+
+            //dialog.setCancelable(false);
+
+            dialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try{
+
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+
+                    while((line = reader.readLine()) != null){
+
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+
+                } catch (MalformedURLException e){
+
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+
+                    if(con != null){
+                        con.disconnect();
+                    }
+                    try {
+                        if(reader != null){
+
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONArray jarray = new JSONArray(result);
+
+                JSONObject jObject = jarray.getJSONObject(0);  // JSONObject 추출
+                String username = jObject.getString("name");
+                name = username;
+
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("printget",result);
+        }
+    }
+
     private class JsonTaskGetfeed extends AsyncTask<String, String, String> {
         ProgressDialog dialog;
         protected void onPreExecute() {
@@ -490,25 +586,27 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
             super.onPostExecute(result);
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
             ArrayList<Integer> photoidList = new ArrayList<>();
+            int photoid = -1;
             try {
                 JSONArray jarray = new JSONArray(result);
                 for (int i = 0; i < jarray.length(); i++) {
                     JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-                    int photoid = Integer.parseInt(jObject.getString("photoid"));
-                    String WriterId = jObject.getString("id");
-                    String WriterName = jObject.getString("name");
-
+                    photoid = Integer.parseInt(jObject.getString("photoid"));
                     photoidList.add(photoid);
-                    if (id == WriterId){
-                        name = WriterName;
-                    }
+
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            newphotoid = Collections.max(photoidList);
-            newphotoid += 1;
+            if (photoid == -1){
+                newphotoid = 1;
+            }
+            else
+            {
+                newphotoid = Collections.max(photoidList);
+                newphotoid += 1;
+            }
         }
     }
 }
