@@ -1,6 +1,8 @@
 package com.example.project2.ui.Gallery;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -39,8 +43,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project2.R;
 import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.example.project2.ui.phonebook.ProfileData;
+import com.example.project2.ui.view.FeedContextMenuManager;
+import com.example.project2.utils.Utils;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -64,6 +71,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
+import butterknife.BindView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -91,6 +99,7 @@ public class GalleryFragment extends Fragment {
     Bitmap mBitmap;
     GalleryAdapter adapter;
 
+
     private ArrayList<GalleryData> serverFeeds ;
     private ProfileData profileInfo;
     private TextInputLayout contents_box;
@@ -99,14 +108,30 @@ public class GalleryFragment extends Fragment {
     private TextInputEditText contents_input;
     private String feedContents;
 
+    /*=---------------------------------------=*/
+    public static final String ACTION_SHOW_LOADING_ITEM = "action_show_loading_item";
+
+    private static final int ANIM_DURATION_TOOLBAR = 300;
+    private static final int ANIM_DURATION_FAB = 400;
+
+    @BindView(R.id.rvFeed)
+    RecyclerView rvFeed;
+    @BindView(R.id.content)
+    CoordinatorLayout clContent;
+    View root;
+    private GalleryAdapter feedAdapter;
+
+    private boolean pendingIntroAnimation;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        //String id = String.valueOf(Profile.getCurrentProfile().getId());
+        setupFeed();
+        String id = String.valueOf(Profile.getCurrentProfile().getId());
         String body = "";
 
-        adapter= new GalleryAdapter(new ArrayList<>(), getContext());
+        adapter= new GalleryAdapter(getContext());
         ivImage = root.findViewById(R.id.picked_Image);
         serverFeeds = new ArrayList<>();
         profileInfo = new ProfileData();
@@ -126,13 +151,12 @@ public class GalleryFragment extends Fragment {
         checkPermissions();
         initRetrofitClient();
         initializeFeeds();
-       // new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
-        //new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
+        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
+        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
 
         SwipeRefreshLayout mSwipeRefreshLayout = root.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-        //    new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
-
+            new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
             adapter.notifyDataSetChanged();
             mSwipeRefreshLayout.setRefreshing(false);
         });
@@ -238,9 +262,83 @@ public class GalleryFragment extends Fragment {
             });
 
         });
+        if (savedInstanceState == null) {
+            pendingIntroAnimation = true;
+        } else {
+            feedAdapter.updateItems(serverFeeds,false);
+        }
 
 
         return root;
+    }
+
+    public void showLikedSnackbar() {
+        Snackbar.make(clContent, "Liked!", Snackbar.LENGTH_SHORT).show();
+    }
+    private void setupFeed() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext()) {
+            @Override
+            protected int getExtraLayoutSpace(RecyclerView.State state) {
+                return 300;
+            }
+        };
+        rvFeed.setLayoutManager(linearLayoutManager);
+
+        feedAdapter = new GalleryAdapter(this.getContext());
+        feedAdapter.setOnFeedItemClickListener((GalleryAdapter.OnFeedItemClickListener) this.root);
+        rvFeed.setAdapter(feedAdapter);
+        rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
+            }
+        });
+        rvFeed.setItemAnimator(new FeedItemAnimator());
+    }
+
+
+    public void onNewIntent(Intent intent) {
+        if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
+            showFeedLoadingItemDelayed();
+        }
+    }
+    private void showFeedLoadingItemDelayed() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rvFeed.smoothScrollToPosition(0);
+                feedAdapter.showLoadingView();
+            }
+        }, 500);
+    }
+
+    private void startIntroAnimation() {
+        fab.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
+
+        int actionbarSize = Utils.dpToPx(56);
+        getToolbar().setTranslationY(-actionbarSize);
+        getIvLogo().setTranslationY(-actionbarSize);
+        getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
+
+        getToolbar().animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(300);
+        getIvLogo().animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(400);
+        getInboxMenuItem().getActionView().animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(500)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        startContentAnimation();
+                    }
+                })
+                .start();
     }
 
     private void selectPhoto() {
@@ -263,6 +361,8 @@ public class GalleryFragment extends Fragment {
                 }
             }
         }
+
+
 
     private File createImageFile() throws IOException {
         File dir = new File(Environment.getExternalStorageDirectory() + "/path/");

@@ -8,7 +8,8 @@ public class GalleryData {
     private String image;
     private String profile;
     private String contents;
-    private int like;
+    public int likesCount;
+    public boolean isLiked;
 
 
 
@@ -17,14 +18,14 @@ public class GalleryData {
         this.photoid = photoid;
         this.image = image;
         this.contents = contents;
-        this.like = like;
+        this.likesCount = like;
     }
 
     public String getImage() { return image; }
 
     public String getContents() { return contents; }
 
-    public int getLike() { return like; }
+    public int getLike() { return likesCount; }
 
 //    public String getName() { return name;}
 //

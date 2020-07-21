@@ -427,5 +427,8 @@
         <string name="toast_upload_picture_issue">Can\'t upload profile picture</string>
 
 
-
+    <plurals name="likes_count">
+        <item quantity="one">%d like</item>
+        <item quantity="other">%d likes</item>
+    </plurals>
 </resources>
