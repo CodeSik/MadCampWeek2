@@ -7,12 +7,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -20,17 +24,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
+import com.example.project2.ui.instamaterial.ui.activity.UserProfileActivity;
 
 import java.util.ArrayList;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
     private ArrayList<JsonData> listViewItemList;
     private ProfileData profileData;
     private Context context;
     public static final int PROFILE_CONTENT = 0;
     public static final int UNFOLLOW_CONTENT = 1;
     public static final int FOLLOW_CONTENT = 2;
+
+    OnProfileClickListener listener;
 
 
     public PhoneBookAdapter(ArrayList<JsonData> items,Context context) {
@@ -52,6 +61,8 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
+
+
     public class ProfileViewHolder extends RecyclerView.ViewHolder{
         private ImageView photo;
         private TextView name;
@@ -59,7 +70,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private Button cameraButton;
         private Button galleryButton;
         private Button stateButton;
-
+        private View expandableList;
 
         public ProfileViewHolder(@NonNull View ProfileView) {
             super(ProfileView);
@@ -69,10 +80,12 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             cameraButton = itemView.findViewById(R.id.CAMERAbutton);
             galleryButton = itemView.findViewById(R.id.GALLERYbutton);
             stateButton = itemView.findViewById(R.id.STATEbutton);
+            expandableList = itemView.findViewById(R.id.expandable_list_profile);
         }
 
         public void bind(ProfileData profileData) {
             boolean expanded = profileData.getExpanded();
+            expandableList.setVisibility(expanded ? View.VISIBLE : View.GONE);
             name.setText(profileData.getName());
             state.setText(profileData.getState());
             Glide.with(context).load(profileData.getPhoto()).into(photo);
@@ -177,9 +190,12 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         {
             ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
             profileViewHolder.bind(profileData);
-            profileViewHolder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(),ProfileActivity.class);
-                context.startActivity(intent);
+            profileViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    profileData.setExpanded(!profileData.getExpanded());
+                    notifyItemChanged(position);
+                }
             });
 
             profileViewHolder.cameraButton.setOnClickListener(v -> {
