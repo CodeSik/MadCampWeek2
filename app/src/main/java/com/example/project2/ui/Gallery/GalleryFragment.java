@@ -103,7 +103,7 @@ public class GalleryFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        String id = String.valueOf(Profile.getCurrentProfile().getId());
+        //String id = String.valueOf(Profile.getCurrentProfile().getId());
         String body = "";
 
         adapter= new GalleryAdapter(new ArrayList<>(), getContext());
@@ -126,12 +126,12 @@ public class GalleryFragment extends Fragment {
         checkPermissions();
         initRetrofitClient();
         initializeFeeds();
-        new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
-        new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
+       // new JsonTaskGetProfile().execute("http://192.249.19.244:1180/users/"+id);
+        //new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
 
         SwipeRefreshLayout mSwipeRefreshLayout = root.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
+        //    new JsonTaskGetPhone().execute("http://192.249.19.244:1180/gallery/"+id);
 
             adapter.notifyDataSetChanged();
             mSwipeRefreshLayout.setRefreshing(false);

@@ -155,7 +155,7 @@ public class LoadingActivity extends Activity {
     @Override
     public void onBackPressed()
     {
-        //super.onBackPressed();
+        super.onBackPressed();
 
     }
 
