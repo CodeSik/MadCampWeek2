@@ -66,6 +66,7 @@ public class GalleryActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int GALLERY_CODE = 1111;
     private String id;
+    private String newPhotoId;
     ApiService apiService;
     Bitmap mBitmap;
     Bitmap sBitmap;
@@ -82,6 +83,8 @@ public class GalleryActivity extends AppCompatActivity {
         selectGallery();
         initRetrofitClient();
 
+        Bundle extras = getIntent().getExtras();
+        newPhotoId = extras.getString("newPhotoId");
         FloatingActionButton fab = findViewById(R.id.uploadButton3);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,92 +100,6 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
 
-/*
-    public class JsonTaskGetProfile extends AsyncTask<String, String, String> {
-        ProgressDialog dialog;
-        @Override
-        protected String doInBackground(String... urls) {
-
-            try {
-
-                HttpURLConnection con = null;
-                BufferedReader reader = null;
-
-                try {
-                    URL url = new URL(urls[0]);
-                    //연결을 함
-                    con = (HttpURLConnection) url.openConnection();
-
-                    con.connect();
-
-                    InputStream stream = con.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(stream));
-
-                    //실제 데이터를 받는곳
-                    StringBuffer buffer = new StringBuffer();
-                    //line별 스트링을 받기 위한 temp 변수
-                    String line = "";
-                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
-                    while ((line = reader.readLine()) != null) {
-                        buffer.append(line);
-                    }
-                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
-                    return buffer.toString();
-                    //아래는 예외처리 부분이다.
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (con != null) {
-                        con.disconnect();
-                    }
-                    try {
-                        if (reader != null) {
-                            reader.close();//버퍼를 닫아줌
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            dialog.dismiss();
-            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-
-            try {
-                JSONArray jarray = new JSONArray(result);
-
-                for (int i = 0; i < jarray.length(); i++) {
-                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-                    String id = jObject.getString("id");
-                    String name = jObject.getString("name");
-                    String number = jObject.getString("number");
-                    String follow = jObject.getString("follow");
-                    String state = jObject.getString("state");
-                    String photo = jObject.getString("photo");
-                    profileData = new ProfileData(id, name, number,follow, state, photo);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-            Log.d("printget",result);
-        }
-
-    }
-
- */
     private void checkPermissions(){
         /* Set permission */
         ArrayList<String> rejectedPermission = new ArrayList<String>();
@@ -316,7 +233,7 @@ public class GalleryActivity extends AppCompatActivity {
     private void multipartImageUpload() {
         try {
             File filesDir = getApplicationContext().getFilesDir();
-            File file = new File(filesDir, "image" + id + ".png"); //file name = image.png
+            File file = new File(filesDir, "image" + newPhotoId + ".png"); //file name = image.png
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -364,6 +281,7 @@ public class GalleryActivity extends AppCompatActivity {
         sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         intent.putExtra("image", byteArray);
+        intent.putExtra("newPhotoId", newPhotoId);
         startActivity(intent);
 
         //View reset

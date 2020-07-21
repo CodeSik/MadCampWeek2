@@ -49,6 +49,7 @@ import retrofit2.Retrofit;
 public class CameraActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int CAMERA_CODE = 1111;
+    private String newPhotoId;
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
@@ -64,7 +65,8 @@ public class CameraActivity extends AppCompatActivity {
 
         ivImage = (ImageView) findViewById(R.id.uploadView);
         id = String.valueOf(Profile.getCurrentProfile().getId());
-
+        Bundle extras = getIntent().getExtras();
+        newPhotoId = extras.getString("newPhotoId");
         //select Photo by Camera
         checkPermissions();
         selectPhoto();
@@ -246,7 +248,7 @@ public class CameraActivity extends AppCompatActivity {
     private void multipartImageUpload() {
         try {
             File filesDir = getApplicationContext().getFilesDir();
-            File file = new File(filesDir, "image" + id + ".png"); //file name = image.png
+            File file = new File(filesDir, "image" + newPhotoId + ".png"); //file name = image.png
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mBitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
@@ -292,6 +294,7 @@ public class CameraActivity extends AppCompatActivity {
         sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         intent.putExtra("image", byteArray);
+        intent.putExtra("newPhotoId", newPhotoId);
         startActivity(intent);
 
         sBitmap = null;
