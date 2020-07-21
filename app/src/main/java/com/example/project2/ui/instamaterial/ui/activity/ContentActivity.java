@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,26 +20,27 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ContentActivity extends AppCompatActivity {
-    private FloatingActionButton upload;
-    private TextInputEditText contents_input;
+    private Button upload;
+    private EditText contents_input;
     private ImageView imageView;
     private String feedContents;
     private String newPhotoId;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content);
+        setContentView(R.layout.activity_publish);
 
-        upload = findViewById(R.id.uploadButton5);
-        imageView = findViewById(R.id.PickedImage);
-        contents_input = findViewById(R.id.InputHere);
+        upload = findViewById(R.id.button2);
+        imageView = findViewById(R.id.ivPhoto);
+        contents_input = findViewById(R.id.etDescription);
         AtomicReference<String> body = new AtomicReference<>("");
         String id = String.valueOf(Profile.getCurrentProfile().getId());
 
         Bundle extras = getIntent().getExtras();
         newPhotoId = extras.getString("newPhotoId");
-
+        username = extras.getString("name");
 
         //유저가 선택한 사진을 이전 Activity에서 받아와 띄우기
         byte[] byteArray = getIntent().getByteArrayExtra("image");
@@ -68,11 +71,12 @@ public class ContentActivity extends AppCompatActivity {
 
             //upload
             String userid = id;
+            String image = "http://192.249.19.244:1180/uploads/image" + newPhotoId +".png";
+            String name = username;
             String photoid = newPhotoId;
-            String image = "http://192.249.19.244:1180/uploads/image" + photoid+".png";
             String contents = feedContents;
             int like = 0;
-            body.set("id=" + userid + '&' + "photoid=" + photoid + '&' + "image=" + image + '&' + "contents=" + contents + '&' + "number=" + like);
+            body.set("id=" + userid + '&' + "image=" + image + '&' + "name=" + name + "&" + "photoid=" + photoid + '&' +  "contents=" + contents + '&' + "number=" + like);
             new JsonTaskPost().execute("http://192.249.19.244:1180/gallery", body.get());
 
         });
