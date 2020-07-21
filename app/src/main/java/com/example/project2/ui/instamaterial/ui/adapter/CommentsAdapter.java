@@ -17,6 +17,9 @@ import com.example.project2.R;
 import com.example.project2.ui.instamaterial.ui.utils.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.BindView;
 
@@ -32,7 +35,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private boolean animationsLocked = false;
     private boolean delayEnterAnimation = true;
-
+    private ArrayList<CommentItem> commentItems;
     public CommentsAdapter(Context context) {
         this.context = context;
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
@@ -41,6 +44,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
+        commentItems = new ArrayList<>();
         return new CommentViewHolder(view);
     }
 
@@ -48,6 +52,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         runEnterAnimation(viewHolder.itemView, position);
         CommentViewHolder holder = (CommentViewHolder) viewHolder;
+
+        holder.ivUserAvatar.setText(commentItems.get(position).getName());
+        holder.tvComment.setText(commentItems.get(position).getComment());
+        /*
         switch (position % 3) {
             case 0:
                 holder.tvComment.setText("Lorem ipsum dolor sit amet, consectetur adipisicing elit.");
@@ -59,13 +67,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder.tvComment.setText("Cupcake ipsum dolor sit. Amet gingerbread cupcake. Gummies ice cream dessert icing marzipan apple pie dessert sugar plum.");
                 break;
         }
+        */
 
-        Picasso.with(context)
-                .load(R.drawable.ic_launcher)
-                .centerCrop()
-                .resize(avatarSize, avatarSize)
-                .transform(new RoundedTransformation())
-                .into(holder.ivUserAvatar);
+
+
     }
 
     private void runEnterAnimation(View view, int position) {
@@ -100,7 +105,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public void addItem() {
+    public void addItem(ArrayList<CommentItem> items) {
+        commentItems.clear();
+        commentItems.addAll(items);
         itemsCount++;
         notifyItemInserted(itemsCount - 1);
     }
@@ -113,9 +120,13 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.delayEnterAnimation = delayEnterAnimation;
     }
 
+    public ArrayList<CommentItem> getCommentItems() {
+        return commentItems;
+    }
+
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ivUserAvatar)
-        ImageView ivUserAvatar;
+        TextView ivUserAvatar;
         @BindView(R.id.tvComment)
         TextView tvComment;
 

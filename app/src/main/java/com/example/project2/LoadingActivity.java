@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.Toast;
@@ -69,20 +70,26 @@ public class LoadingActivity extends Activity {
         loginButton.setReadPermissions("email");
         loginButton.setReadPermissions("public_profile");
 
+        loginButton.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+                if (isLoggedIn) {
+                    LoginManager.getInstance().logInWithReadPermissions(LoadingActivity.this, Arrays.asList("public_profile","email"));
+                    String id = String.valueOf(Profile.getCurrentProfile().getId());
+                    String name= String.valueOf(Profile.getCurrentProfile().getName());
+                    String number = getPhoneNumber();
+                    String follow = " ";
+                    String state = " ";
+                    String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
+                    String body = "id=" + id + '&' + "name=" + name+ '&' +"number="+number+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
+                    new JsonTaskPost().execute("http://192.249.19.244:1180/users", body);
+                }
+            }
+        });
 
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if (isLoggedIn) {
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile","email"));
-            String id = String.valueOf(Profile.getCurrentProfile().getId());
-            String name= String.valueOf(Profile.getCurrentProfile().getName());
-            String number = getPhoneNumber();
-            String follow = " ";
-            String state = " ";
-            String photo = "http://192.249.19.244:1180/uploads/ic_user_location.png";
-            String body = "id=" + id + '&' + "name=" + name+ '&' +"number="+number+ '&' +"follow="+follow+'&'+"state="+state+ '&' +"photo="+photo;
-            new JsonTaskPost().execute("http://192.249.19.244:1180/users", body);
-        }
+
 
 
 // Callback registration
@@ -100,6 +107,8 @@ public class LoadingActivity extends Activity {
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);
+
+
                 Toast.makeText( getApplicationContext() , "페이스북 로그인을 취소하셨습니다." , Toast.LENGTH_LONG ).show();
             }
 

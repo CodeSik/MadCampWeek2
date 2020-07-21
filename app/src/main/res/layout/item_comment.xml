@@ -10,13 +10,12 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp">
 
-        <ImageView
+        <TextView
             android:id="@+id/ivUserAvatar"
-            android:layout_width="@dimen/comment_avatar_size"
-            android:layout_height="@dimen/comment_avatar_size"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/bg_comment_avatar" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView" />
 
         <TextView
             android:id="@+id/tvComment"
@@ -24,8 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="16dp"
-            android:layout_weight="1"
-            android:text="Lorem ipsum dolor sit amet" />
+            android:layout_weight="9.0" />
     </LinearLayout>
 
     <View

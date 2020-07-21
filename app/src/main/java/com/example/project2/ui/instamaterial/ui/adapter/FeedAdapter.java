@@ -2,6 +2,7 @@ package com.example.project2.ui.instamaterial.ui.adapter;
 
 import android.content.Context;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
 import com.example.project2.ui.instamaterial.ui.activity.InstaActivity;
+import com.example.project2.ui.instamaterial.ui.activity.UserProfileActivity;
 import com.example.project2.ui.instamaterial.ui.view.LoadingFeedItemView;
 import com.facebook.Profile;
 
@@ -170,6 +172,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         cellFeedViewHolder.ivUserProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 onFeedItemClickListener.onProfileClick(view);
             }
         });

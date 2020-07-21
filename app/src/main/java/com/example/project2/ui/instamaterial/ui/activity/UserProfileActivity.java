@@ -16,10 +16,12 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.example.project2.R;
 import com.example.project2.ui.instamaterial.ui.adapter.UserProfileAdapter;
 import com.example.project2.ui.instamaterial.ui.utils.CircleTransformation;
 import com.example.project2.ui.instamaterial.ui.view.RevealBackgroundView;
+import com.facebook.Profile;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +36,7 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+
 
     @BindView(R.id.vRevealBackground)
     RevealBackgroundView vRevealBackground;
@@ -58,9 +61,11 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     private String profilePhoto;
     private UserProfileAdapter userPhotosAdapter;
 
+
     public static void startUserProfileFromLocation(int[] startingLocation, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, UserProfileActivity.class);
         intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
+
         startingActivity.startActivity(intent);
     }
 
@@ -69,8 +74,12 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        Bundle extras = getIntent().getExtras();
+        String id = extras.getString("id");
+
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
-        this.profilePhoto = getString(R.string.user_profile_photo);
+        this.profilePhoto = "http://192.249.19.244:1180/uploads/image"+id+".png";
+       // Glide.with(getApplicationContext()).load(profilePhoto).into(ivUserProfilePhoto);
 
         Picasso.with(this)
                 .load(profilePhoto)
@@ -79,6 +88,8 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                 .centerCrop()
                 .transform(new CircleTransformation())
                 .into(ivUserProfilePhoto);
+
+
 
         setupTabs();
         setupUserProfileGrid();

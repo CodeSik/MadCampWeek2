@@ -48,7 +48,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
     @Override
     protected void setupToolbar() {
-//        super.setupToolbar();
+        super.setupToolbar();
         if (getToolbar() != null) {
             getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
                 @Override

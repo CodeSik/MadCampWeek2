@@ -3,7 +3,7 @@ package com.example.project2.ui.instamaterial.ui.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 
-import android.app.ProgressDialog;
+
 
 
 import android.content.Intent;
@@ -214,6 +214,8 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         int[] startingLocation = new int[2];
         v.getLocationOnScreen(startingLocation);
         intent.putExtra(CommentsActivity.ARG_DRAWING_START_LOCATION, startingLocation[1]);
+        intent.putExtra("photoid",feeditems.get(position).getPhotoid());
+        intent.putExtra("name",name);
         startActivity(intent);
         overridePendingTransition(0, 0);
     }
@@ -301,19 +303,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
 
 
     private class JsonTaskGetUserProfile extends AsyncTask<String, String, String> {
-        ProgressDialog dialog;
-        protected void onPreExecute() {
 
-            super.onPreExecute();
-
-
-            dialog = new ProgressDialog(InstaActivity.this);
-
-            //dialog.setCancelable(false);
-
-            dialog.show();
-
-        }
 
         @Override
         protected String doInBackground(String... urls) {
@@ -377,7 +367,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            dialog.dismiss();
+
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
 
             try {
@@ -396,19 +386,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     }
 
     private class JsonTaskGetfeed extends AsyncTask<String, String, String> {
-        ProgressDialog dialog;
-        protected void onPreExecute() {
 
-            super.onPreExecute();
-
-
-            dialog = new ProgressDialog(InstaActivity.this);
-
-            //dialog.setCancelable(false);
-
-            dialog.show();
-
-        }
 
         @Override
         protected String doInBackground(String... urls) {
@@ -472,7 +450,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            dialog.dismiss();
+
             //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
             feeditems.clear();
             feedAdapter.getFeedItems().clear();
