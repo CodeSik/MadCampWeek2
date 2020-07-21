@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.github.froger.instamaterial.ui.view.RevealBackgroundView
+    <com.example.project2.ui.instamaterial.ui.view.RevealBackgroundView
         android:id="@+id/vRevealBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -26,28 +26,28 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:background="@color/com_smart_login_code"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:contentScrim="?attr/colorPrimary"
+                app:contentScrim="@color/com_smart_login_code"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <LinearLayout
                     android:id="@+id/vUserProfileRoot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorPrimary"
+                    android:background="@color/com_smart_login_code"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="24dp"
                     android:paddingLeft="24dp"
-                    android:paddingRight="24dp"
                     android:paddingTop="64dp"
+                    android:paddingRight="24dp"
+                    android:paddingBottom="24dp"
                     app:layout_collapseMode="parallax">
 
                     <LinearLayout
@@ -93,8 +93,8 @@
                                 android:id="@+id/btnFollow"
                                 android:layout_width="match_parent"
                                 android:layout_height="24dp"
-                                android:layout_marginRight="24dp"
                                 android:layout_marginTop="8dp"
+                                android:layout_marginRight="24dp"
                                 android:background="@drawable/btn_following"
                                 android:text="following"
                                 android:textColor="#ffffff"
@@ -108,8 +108,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="16dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -184,7 +184,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
+                    android:background="@color/com_smart_login_code"
                     app:elevation="@dimen/default_elevation"
                     app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways"
@@ -209,7 +209,7 @@
                     android:id="@+id/tlUserProfileTabs"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:background="?attr/colorAccent"
+                    android:background="@color/style_color_accent"
                     app:tabGravity="fill"
                     app:tabIndicatorColor="#5be5ad"
                     app:tabIndicatorHeight="4dp"
