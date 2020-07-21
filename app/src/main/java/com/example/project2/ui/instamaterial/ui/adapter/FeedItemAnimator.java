@@ -103,7 +103,7 @@ public class FeedItemAnimator extends DefaultItemAnimator {
             else {
                 animateHeartButton_unlike(holder);
             }
-            updateLikesCounter(holder, holder.getFeedItem().likesCount);
+            updateLikesCounter(holder, holder.getFeedItem().getLike());
             if (FeedAdapter.ACTION_LIKE_IMAGE_CLICKED.equals(feedItemHolderInfo.updateAction)) {
                 animatePhotoLike(holder);
             }

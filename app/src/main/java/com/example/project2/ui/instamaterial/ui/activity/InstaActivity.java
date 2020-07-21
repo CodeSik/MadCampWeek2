@@ -3,11 +3,14 @@ package com.example.project2.ui.instamaterial.ui.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,12 +24,16 @@ import android.view.animation.OvershootInterpolator;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project2.R;
 import com.example.project2.ui.instamaterial.ui.adapter.FeedAdapter;
+import com.example.project2.ui.instamaterial.ui.adapter.FeedItem;
 import com.example.project2.ui.instamaterial.ui.adapter.FeedItemAnimator;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenu;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenuManager;
+import com.example.project2.ui.phonebook.JsonData;
+import com.example.project2.ui.phonebook.PhoneBookFragment;
 import com.example.project2.ui.phonebook.ProfileActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -36,7 +43,18 @@ import butterknife.OnClick;
 
 import com.example.project2.ui.instamaterial.Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 
 public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnFeedItemClickListener,
@@ -54,18 +72,19 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     CoordinatorLayout clContent;
     private MenuItem inboxMenuItem;
     private FeedAdapter feedAdapter;
-
+    private ArrayList<FeedItem> feeditems ;
     private boolean pendingIntroAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insta);
-
+        feeditems = new ArrayList<>();
+        new JsonTaskGetfeed().execute("http://192.249.19.244:1180/gallery/");
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
         } else {
-            feedAdapter.updateItems(false);
+            feedAdapter.updateItems(false,feeditems);
         }
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -73,6 +92,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         } else if (Build.VERSION.SDK_INT < 21) {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
+
         setupFeed();
     }
 
@@ -166,7 +186,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
                 .setStartDelay(300)
                 .setDuration(ANIM_DURATION_FAB)
                 .start();
-        feedAdapter.updateItems(true);
+        feedAdapter.updateItems(true,feeditems);
     }
 
     @Override
@@ -236,4 +256,108 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     }
 
 
+    private class JsonTaskGetfeed extends AsyncTask<String, String, String> {
+        ProgressDialog dialog;
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+
+
+            dialog = new ProgressDialog(InstaActivity.this);
+
+            //dialog.setCancelable(false);
+
+            dialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try{
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while((line = reader.readLine()) != null){
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e){
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if(con != null){
+                        con.disconnect();
+                    }
+                    try {
+                        if(reader != null){
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            dialog.dismiss();
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            feeditems.clear();
+            feedAdapter.getFeedItems().clear();
+            try {
+                JSONArray jarray = new JSONArray(result);
+
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    String id = jObject.getString("id");
+                    String image = jObject.getString("image");
+                    String name = jObject.getString("name");
+                    String photoid = jObject.getString("photoid");
+                    String contents=jObject.getString("contents");
+                    int like = jObject.getInt("like");
+                    FeedItem data = new FeedItem(id,image,name,photoid,contents,like);
+                    feeditems.add(data);
+                }
+
+
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    feedAdapter.updateItems(false,feeditems);
+                    feedAdapter.notifyDataSetChanged();
+                }
+            });
+            Log.d("printget",result);
+        }
+
+    }
 }

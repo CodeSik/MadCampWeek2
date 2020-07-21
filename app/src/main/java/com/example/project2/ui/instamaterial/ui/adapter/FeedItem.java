@@ -8,7 +8,7 @@ public class FeedItem {
     private String name;
     private String image;
     private String contents;
-    private int like;
+    private int likesCount;
     public boolean isLiked;
 
 
@@ -53,11 +53,11 @@ public class FeedItem {
     }
 
     public int getLike() {
-        return like;
+        return likesCount;
     }
 
     public void setLike(int like) {
-        this.like = like;
+        this.likesCount = like;
     }
 
     public boolean isLiked() {
@@ -68,13 +68,13 @@ public class FeedItem {
         isLiked = liked;
     }
 
-    public FeedItem(String id, String photoid, String name, String image, String contents, int like, boolean isLiked) {
+    public FeedItem(String id, String image, String name, String photoid, String contents, int like) {
         this.id = id;
         this.photoid = photoid;
         this.name = name;
         this.image = image;
         this.contents = contents;
-        this.like = like;
-        this.isLiked = isLiked;
+        this.likesCount = like;
+
     }
 }

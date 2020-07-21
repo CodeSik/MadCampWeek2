@@ -67,9 +67,9 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private ImageView photo;
         private TextView name;
         private TextView state;
-        private Button cameraButton;
-        private Button galleryButton;
-        private Button stateButton;
+        private ImageButton cameraButton;
+        private ImageButton galleryButton;
+        private ImageButton stateButton;
         private View expandableList;
 
         public ProfileViewHolder(@NonNull View ProfileView) {
