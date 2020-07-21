@@ -59,10 +59,10 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-
+        checkPermissions();
         ivImage = (ImageView) findViewById(R.id.uploadView2);
         id = String.valueOf(Profile.getCurrentProfile().getId());
-        checkPermissions();
+
         selectGallery();
         initRetrofitClient();
 
@@ -75,9 +75,11 @@ public class GalleryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mBitmap != null) {
                     multipartImageUpload();// 이 함수 마지막에 contentActivity를 실행
+                    finish();
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
         });

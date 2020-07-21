@@ -76,9 +76,9 @@ public class ContentActivity extends AppCompatActivity {
             String photoid = newPhotoId;
             String contents = feedContents;
             int like = 0;
-            body.set("id=" + userid + '&' + "image=" + image + '&' + "name=" + name + "&" + "photoid=" + photoid + '&' +  "contents=" + contents + '&' + "number=" + like);
+            body.set("id=" + userid + '&' + "image=" + image + '&' + "name=" + name + "&" + "photoid=" + photoid + '&' +  "contents=" + contents + '&' + "like=" + like);
             new JsonTaskPost().execute("http://192.249.19.244:1180/gallery", body.get());
-
+            finish();
         });
 
     }

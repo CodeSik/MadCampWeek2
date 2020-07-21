@@ -109,7 +109,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insta);
-
+        setupFeed();
         feeditems = new ArrayList<>();
         new JsonTaskGetfeed().execute("http://192.249.19.244:1180/gallery/");
 
@@ -118,8 +118,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         camera = findViewById(R.id.CAMERABUTTON);
         gallery = findViewById(R.id.GALLERYBUTTON);
         id = String.valueOf(Profile.getCurrentProfile().getId());
-
-       // new JsonTaskGetFeeds().execute("http://192.249.19.244:1180/gallery");
+        new JsonTaskGetFeedForUpload().execute("http://192.249.19.244:1180/gallery");
 
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
@@ -133,7 +132,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
 
-        setupFeed();
+
     }
 
     private void setupFeed() {
@@ -430,5 +429,86 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         }
 
 
+    }
+
+    public class JsonTaskGetFeedForUpload extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try {
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.connect();
+
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    //실제 데이터를 받는곳
+                    StringBuffer buffer = new StringBuffer();
+                    //line별 스트링을 받기 위한 temp 변수
+                    String line = "";
+                    //아래라인은 실제 reader에서 데이터를 가져오는 부분이다. 즉 node.js서버로부터 데이터를 가져온다.
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    //다 가져오면 String 형변환을 수행한다. 이유는 protected String doInBackground(String… urls) 니까
+                    return buffer.toString();
+                    //아래는 예외처리 부분이다.
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            ArrayList<Integer> photoidList = new ArrayList<>();
+            try {
+                JSONArray jarray = new JSONArray(result);
+                for (int i = 0; i < jarray.length(); i++) {
+                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                    int photoid = Integer.parseInt(jObject.getString("photoid"));
+                    String WriterId = jObject.getString("id");
+                    String WriterName = jObject.getString("name");
+
+                    photoidList.add(photoid);
+                    if (id == WriterId){
+                        name = WriterName;
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newphotoid = Collections.max(photoidList);
+            newphotoid += 1;
+        }
     }
 }

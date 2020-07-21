@@ -63,14 +63,14 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
+        checkPermissions();
         ivImage = (ImageView) findViewById(R.id.uploadView);
         id = String.valueOf(Profile.getCurrentProfile().getId());
         Bundle extras = getIntent().getExtras();
         newPhotoId = extras.getString("newPhotoId");
         name = extras.getString("name");
         //select Photo by Camera
-        checkPermissions();
+
         selectPhoto();
         initRetrofitClient();
 
@@ -81,9 +81,11 @@ public class CameraActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mBitmap != null) {
                     multipartImageUpload();
+                    finish();
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
 
             }
