@@ -3,7 +3,6 @@ package com.example.project2.ui.instamaterial.ui.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 
 
@@ -27,7 +26,6 @@ import android.view.animation.OvershootInterpolator;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project2.R;
 import com.example.project2.ui.instamaterial.Utils;
@@ -37,11 +35,7 @@ import com.example.project2.ui.instamaterial.ui.adapter.FeedItemAnimator;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenu;
 import com.example.project2.ui.instamaterial.ui.view.FeedContextMenuManager;
 
-import com.example.project2.ui.phonebook.JsonData;
-import com.example.project2.ui.phonebook.PhoneBookFragment;
-import com.example.project2.ui.phonebook.ProfileActivity;
-
-import com.example.project2.ui.phonebook.CameraActivity;
+import com.example.project2.ui.phonebook.ProfileCameraActivity;
 import com.example.project2.ui.phonebook.GalleryActivity;
 import com.facebook.Profile;
 
@@ -53,10 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,20 +56,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import retrofit2.http.HEAD;
-
 
 
 public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnFeedItemClickListener,
@@ -278,7 +258,7 @@ public class InstaActivity extends BaseDrawerActivity implements FeedAdapter.OnF
         anim();
         camera.setOnClickListener(v -> {
             anim();
-            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+            Intent intent = new Intent(getApplicationContext(), FeedCameraActivity.class);
             intent.putExtra("newPhotoId", newphotoid.toString());
             intent.putExtra("name", name);
             startActivity(intent);

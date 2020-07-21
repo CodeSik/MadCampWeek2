@@ -7,16 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -24,11 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.project2.R;
-import com.example.project2.ui.instamaterial.ui.activity.UserProfileActivity;
 
 import java.util.ArrayList;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
@@ -199,7 +192,7 @@ public class PhoneBookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             });
 
             profileViewHolder.cameraButton.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), CameraActivity.class);
+                Intent intent = new Intent(v.getContext(), ProfileCameraActivity.class);
                 context.startActivity(intent);
             });
 

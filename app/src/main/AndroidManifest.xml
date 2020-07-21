@@ -34,6 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.instamaterial.ui.activity.FeedCameraActivity"></activity>
         <activity android:name=".ui.instamaterial.ui.activity.ContentActivity" />
         <activity android:name=".ui.phonebook.StateActivity" />
         <activity
@@ -71,7 +72,7 @@
             android:label="@string/title_activity_gallery"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.phonebook.CameraActivity"
+            android:name=".ui.phonebook.ProfileCameraActivity"
             android:label="@string/title_activity_camera"
             android:theme="@style/AppTheme.NoActionBar" />
 
