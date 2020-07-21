@@ -85,31 +85,93 @@
         android:background="#E3E3E3" />
 
     <LinearLayout
+        android:id="@+id/expandable_list_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <Button
-            android:id="@+id/CAMERAbutton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="294dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Camera" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/GALLERYbutton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Gallery" />
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/STATEbutton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            <ImageButton
+                android:id="@+id/CAMERAbutton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:backgroundTint="#B9D3ED"
+                android:tint="#000000"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="294dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="State" />
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/GALLERYbutton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:backgroundTint="#B9D3ED"
+                android:src="@drawable/ic_collections_white_24dp"
+                android:tint="#000000" />
+
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="294dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/STATEbutton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:backgroundTint="#B9D3ED"
+                android:src="@drawable/ic_comment_outline_grey"
+                android:tint="#000000" />
+
+            <Space
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
