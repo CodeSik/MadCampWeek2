@@ -23,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/InputHere"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

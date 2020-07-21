@@ -42,6 +42,7 @@ public class PhotoActivity extends AppCompatActivity {
             anim();
             Intent intent = new Intent(getApplicationContext(), GalleryActivity.class);
             startActivity(intent);
+
         });
 
         //finish(); //upload 다 되면?

@@ -24,8 +24,10 @@ import androidx.core.content.ContextCompat;
 
 import com.example.project2.JsonTaskPost;
 import com.example.project2.JsonTaskPut;
+import com.example.project2.MainActivity;
 import com.example.project2.R;
 import com.example.project2.ui.Gallery.ApiService;
+import com.example.project2.ui.instamaterial.ui.activity.ContentActivity;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -57,12 +59,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import java.io.ByteArrayOutputStream;
+
+
 public class GalleryActivity extends AppCompatActivity {
     public ImageView ivImage;
     private final int GALLERY_CODE = 1111;
     private String id;
     ApiService apiService;
     Bitmap mBitmap;
+    Bitmap sBitmap;
     final int MULTIPLE_PERMISSION_REQUEST = 0;
     private ProfileData profileData;
     @Override
@@ -81,7 +87,7 @@ public class GalleryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mBitmap != null) {
-                    multipartImageUpload();
+                    multipartImageUpload();// 이 함수 마지막에 contentActivity를 실행
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Bitmap is null. Try again", Toast.LENGTH_SHORT).show();
@@ -243,11 +249,14 @@ public class GalleryActivity extends AppCompatActivity {
         int exifDegree = exifOrientationToDegrees(exifOrientation);
 
         //경로를 통해 비트맵으로 전환
-        Bitmap bitmap = getResizePicture(imagePath);
+        Bitmap bitmap = getResizePicture(imagePath, 1000);
+        Bitmap smallBitmap = getResizePicture(imagePath, 300);
+
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
 
         //이미지 뷰에 비트맵 넣기
-        mBitmap = finalBitmap;
+        mBitmap = finalBitmap;//서버 업로드용
+        sBitmap = rotate(smallBitmap, exifDegree);//content activity 전달용
         ivImage.setImageBitmap(finalBitmap);
     }
 
@@ -259,11 +268,10 @@ public class GalleryActivity extends AppCompatActivity {
         } return cursor.getString(column_index);
     }
 
-    private Bitmap getResizePicture(String imagePath){ //사진 용량을 줄여주는 함수
+    private Bitmap getResizePicture(String imagePath, int resize){ //사진 용량을 줄여주는 함수
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, options);
-        int resize = 1000;
         int width = options.outWidth;
         int height = options.outHeight;
         int sampleSize = 1;
@@ -347,9 +355,21 @@ public class GalleryActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //contentActivity 실행
+        Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
+
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        intent.putExtra("image", byteArray);
+        startActivity(intent);
+
+        //View reset
         mBitmap = null;
-        ivImage.setImageResource(0); //View Reset
-        finish();
+        sBitmap = null;
+        ivImage.setImageResource(0);
     }
 
 }

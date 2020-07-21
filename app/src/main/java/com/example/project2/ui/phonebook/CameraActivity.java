@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider;
 
 import com.example.project2.R;
 import com.example.project2.ui.Gallery.ApiService;
+import com.example.project2.ui.instamaterial.ui.activity.ContentActivity;
 import com.facebook.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -51,6 +52,7 @@ public class CameraActivity extends AppCompatActivity {
     private String currentPhotoPath; //실제 사진 파일 경로
     String mImageCaptureName; //이미지 이름
     Bitmap mBitmap;
+    Bitmap sBitmap;
     final int MULTIPLE_PERMISSION_REQUEST = 0;
     ApiService apiService;
     private String id;
@@ -172,7 +174,9 @@ public class CameraActivity extends AppCompatActivity {
 
     /*treat the picture by currentPhotoPath*/
     private void getPictureForPhoto() {
-        Bitmap bitmap = getResizePicture(currentPhotoPath);
+        Bitmap bitmap = getResizePicture(currentPhotoPath, 1000);
+        Bitmap smallBitmap = getResizePicture(currentPhotoPath, 300);
+
         ExifInterface exif = null;
         try { exif = new ExifInterface(currentPhotoPath);
         } catch (IOException e) {
@@ -189,14 +193,14 @@ public class CameraActivity extends AppCompatActivity {
         Bitmap finalBitmap = rotate(bitmap, exifDegree);
         //ivImage.setImageBitmap(finalBitmap);//이미지 뷰에 비트맵 넣기
         mBitmap = finalBitmap;
+        sBitmap = smallBitmap;
         ivImage.setImageBitmap(finalBitmap);
     }
 
-    private Bitmap getResizePicture(String imagePath){ //사진 용량을 줄여주는 함수
+    private Bitmap getResizePicture(String imagePath, int resize){ //사진 용량을 줄여주는 함수
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, options);
-        int resize = 1000;
         int width = options.outWidth;
         int height = options.outHeight;
         int sampleSize = 1;
@@ -281,9 +285,18 @@ public class CameraActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Intent intent = new Intent(getApplicationContext(), ContentActivity.class);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        intent.putExtra("image", byteArray);
+        startActivity(intent);
+
+        sBitmap = null;
         mBitmap = null;
         ivImage.setImageResource(0); //View Reset
-        finish();
     }
 
 }
