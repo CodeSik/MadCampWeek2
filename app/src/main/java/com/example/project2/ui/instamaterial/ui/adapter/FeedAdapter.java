@@ -283,7 +283,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void bindView(FeedItem feedItem) {
             this.feedItem = feedItem;
             int adapterPosition = getAdapterPosition();
-            String id = String.valueOf(Profile.getCurrentProfile().getId());
+            String id = feedItem.getId();
             //프사 설정
             Glide.with(context).load("http://192.249.19.244:1180/uploads/image"+id+".png").into(ivUserProfile);
             //이름 설정

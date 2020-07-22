@@ -13,7 +13,7 @@
         android:paddingBottom="8dp">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/comment_photo"
             android:layout_width="41dp"
             android:layout_height="43dp"
             android:layout_weight="1"

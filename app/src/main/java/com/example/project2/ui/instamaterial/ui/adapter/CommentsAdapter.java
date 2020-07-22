@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.project2.R;
 import com.example.project2.ui.instamaterial.ui.utils.RoundedTransformation;
+import com.facebook.Profile;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -52,9 +54,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         runEnterAnimation(viewHolder.itemView, position);
         CommentViewHolder holder = (CommentViewHolder) viewHolder;
-
+        String id = commentItems.get(position).getId();
         holder.ivUserAvatar.setText(commentItems.get(position).getName());
         holder.tvComment.setText(commentItems.get(position).getComment());
+        Glide.with(context).load("http://192.249.19.244:1180/uploads/image"+id+".png").into(holder.comment_photo);
         /*
         switch (position % 3) {
             case 0:
@@ -129,6 +132,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView ivUserAvatar;
         @BindView(R.id.tvComment)
         TextView tvComment;
+        @BindView(R.id.comment_photo)
+        ImageView comment_photo;
 
         public CommentViewHolder(View view) {
             super(view);

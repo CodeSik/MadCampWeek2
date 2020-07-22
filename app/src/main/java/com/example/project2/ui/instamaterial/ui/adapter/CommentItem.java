@@ -1,11 +1,21 @@
 package com.example.project2.ui.instamaterial.ui.adapter;
 
 public class CommentItem {
+    private String id;
     private String photoid;
     private String name;
     private String comment;
 
-    public CommentItem(String photoid, String name, String comment) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public CommentItem(String id, String photoid, String name, String comment) {
+        this.id = id;
         this.photoid = photoid;
         this.name = name;
         this.comment = comment;

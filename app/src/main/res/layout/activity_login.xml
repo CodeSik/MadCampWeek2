@@ -89,17 +89,25 @@
                         android:textColorHint="@color/colorPrimary" />
 
 
+                    <com.facebook.login.widget.LoginButton
+                        android:id="@+id/login_button"
+                        android:layout_width="500dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginBottom="30dp" />
+
                     <Button
-                        android:id="@+id/button3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
+                        android:id="@+id/btn_custom_logout"
+                        android:layout_width="800dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="30dp"
                         android:alpha="1"
-                        android:background="@drawable/facebook"
-                        android:scaleX="1.3"
-                        android:scaleY="2.0"
+                        android:background="@drawable/facebook_logout"
+                        android:scaleX="0.5"
+                        android:scaleY="1.0"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"
                         android:textStyle="bold" />

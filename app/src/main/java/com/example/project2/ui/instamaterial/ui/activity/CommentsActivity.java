@@ -33,6 +33,7 @@ import com.example.project2.ui.instamaterial.ui.adapter.CommentItem;
 import com.example.project2.ui.instamaterial.ui.adapter.CommentsAdapter;
 import com.example.project2.ui.instamaterial.ui.adapter.FeedItem;
 import com.example.project2.ui.instamaterial.ui.view.SendCommentButton;
+import com.facebook.Profile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +87,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
         photoid = getIntent().getStringExtra("photoid");
         name = getIntent().getStringExtra("name");
-        CommentItem initialItem = new CommentItem(photoid,"이름","덧글");
+        CommentItem initialItem = new CommentItem("12312421",photoid,"이름","덧글");
         recvitems.add(initialItem);
         commentsAdapter.addItem(recvitems);
 
@@ -199,13 +200,13 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
     @Override
     public void onSendClickListener(View v) {
         if (validateComment()) {
-
-            senditem = new CommentItem(photoid,name,comment);
+            String id = String.valueOf(Profile.getCurrentProfile().getId());
+            senditem = new CommentItem(id, photoid,name,comment);
             String body = " ";
             String sdphotoid = senditem.getPhotoid();
             String sdname = senditem.getName();
             String sdcomment = senditem.getComment();
-            body = "photoid=" + sdphotoid + '&' + "name=" + sdname + '&' + "comment=" + sdcomment;
+            body = "id="+id+ '&' + "photoid=" + sdphotoid + '&' + "name=" + sdname + '&' + "comment=" + sdcomment;
             new JsonTaskCommentPost().execute("http://192.249.19.244:1180/comment", body);
 
             new JsonTaskCommentGet().execute("http://192.249.19.244:1180/comment"+sdphotoid);
@@ -428,10 +429,11 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
 
                     for (int i = 0; i < jarray.length(); i++) {
                         JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+                        String id = jObject.getString("id");
                         String photoid = jObject.getString("photoid");
                         String name = jObject.getString("name");
                         String comment = jObject.getString("comment");
-                        CommentItem data = new CommentItem(photoid, name, comment);
+                        CommentItem data = new CommentItem(id,photoid, name, comment);
                         recvitems.add(data);
                     }
 
